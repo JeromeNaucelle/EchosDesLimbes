@@ -1,0 +1,74 @@
+{% load sekizai_tags cms_tags %}
+
+<div class="card text-center h-100" style="background-image: url('{{background_img}}'); background-size: contain; color: {{text_color}};">
+    <h2>{{ticket.opus.larp}}</h2>
+    <h3>{{ticket.access_type}}</h3>
+
+    <div class="m-3">
+        <label>Sélectionnez votre {{ faction_name }}
+        <select name="factions" id="faction-select" class="form-select">
+            {% for f in factions %}
+            <option value="{{f.pk}}">{{f.name}}</option>
+            {% endfor %}
+        </select>
+        </label>
+    </div>
+
+    
+    <p><b>{{ticket.price}} €</b></p>
+
+    <button class="btn btn-primary m-3 payment-btn" data-pk="{{ticket.pk}}">Acheter</button>
+</div>
+
+{% addtoblock "js" %}<script src="https://js.stripe.com/v3/"></script>{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script>
+    function startCheckout(data) {
+        // Initialize Stripe.js
+        const stripe = Stripe(data.publicKey);
+
+        let buttons = document.querySelectorAll(".payment-btn");
+        buttons.forEach((el) => {
+            el.addEventListener("click", function() {
+                const ticket_pk = parseInt(this.getAttribute('data-pk'));
+                const parent_plugin = this.parentElement.getElementsByClassName('form-select')[0]
+                const faction_pk = parseInt(parent_plugin.value)
+
+                // Get Checkout Session ID
+                    // Petit hack car la page create-cs attend en argument le ticket.pk 
+                    // Cette valeur est obtenue côté client donc on reverse_url avec un pk = 0
+                    // puis on ajoute le pk obtenu côté client
+                let url = "{% url 'payments:create-cs' 0 %}";
+                url = url.substring(0, url.length - 1) + ticket_pk+"?faction="+faction_pk;
+                fetch(url)
+                .then((result) => { return result.json(); })
+                .then((data) => {
+                    console.log(data);
+                    // Redirect to Stripe Checkout
+                    if(data.redirect == 1) {
+                        window.location.href = "{% url 'login' %}?next={{request.get_full_path}}"
+                    }
+                    else {
+                        return stripe.redirectToCheckout({sessionId: data.sessionId})
+                    }
+                })
+                .then((res) => {
+                    console.log(res);
+                })
+            });
+        });
+    }
+</script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script>
+    console.log("Sanity check!");
+
+    // Get Stripe publishable key
+    fetch( "{% url 'payments:config' %}")
+    .then((result) => { return result.json(); })
+    .then((data) => startCheckout(data));
+</script>
+{% endaddtoblock %}

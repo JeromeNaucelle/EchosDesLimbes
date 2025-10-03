@@ -1,0 +1,150 @@
+{% extends "djangocms_frontend.html" %}{% load static cms_tags menu_tags django_bootstrap5 %}
+{% block base_css %}
+    {% bootstrap_css %}
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&family=Ysabeau+Office:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
+   
+   <style>
+
+        :root {
+            --limbes-dark: #1a1a1a;
+            --limbes-gold: #c4a35a;
+            --limbes-gray: #f5f5f5;
+            --limbes-purple: #6100c2;
+
+        }
+        
+        body {
+            font-family: 'Ysabeau Office', sans-serif;
+            font-size: 1.3rem;
+            background-color: var(--limbes-dark);
+            color: white;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+        }
+
+        p {
+          font-size: large;
+        }
+
+        a {
+          text-decoration-thickness: 1px !important;
+          text-underline-offset: .1em;
+          color: white;
+        }
+
+        a:hover {
+          text-decoration: none;
+          color: var(--limbes-gold);
+        }
+        
+        .bg-limbes-dark {
+            background-color: var(--limbes-dark);
+        }
+        
+        .bg-limbes-gold {
+            background-color: var(--limbes-gold);
+        }
+        
+        .text-limbes-gold {
+            color: var(--limbes-gold);
+        }
+        
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .card {
+            transition: transform 0.2s;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .form-text {
+            color: var(--limbes-gray);;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .btn-limbes {
+            background-color: var(--limbes-gold);
+            color: white;
+            border: none;
+        }
+        
+        .btn-limbes:hover {
+            background-color: #b38f4f;
+            color: white;
+        }
+        
+        .nav-link {
+            color: var(--limbes-gray) !important;
+            font-weight: 500;
+        }
+        
+        .nav-link:hover {
+            color: var(--limbes-gold) !important;
+        }
+        
+        footer {
+            background-color: var(--limbes-dark);
+            color: white;
+        }
+
+        #main-content {
+          background-image: url("{% static 'img/background.jpg' %}");
+          background-repeat: no-repeat;
+          background-attachment: fixed;
+          background-position: center;
+          border-radius: 15px;
+          padding: 2em;
+          margin-top: 2em;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+
+        .form-check-input, .form-control  {
+            background-color: #1a1a1a;
+            color: #f5f5f5;
+        }
+
+        .form-control:disabled {
+            color: #1a1a1a;
+        }
+
+        .table {
+            --bs-table-bg: transparent !important;
+            --bs-table-color: var(--bs-white);
+        }
+
+        
+    </style>
+{% endblock %}
+
+{% block base_js %}
+    {% bootstrap_javascript %}
+    <script src="https://kit.fontawesome.com/f022beda53.js" crossorigin="anonymous"></script>
+{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar {% block navbar_options %}navbar-expand-lg navbar-dark bg-dark{% endblock %}">
+        <div class="container">
+            <a class="navbar-brand" href="/">{% block brand %}{% endblock %}</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">{% block menubar %}{% show_menu 0 100 100 100 'bootstrap5/menu.html' %}{% endblock %}</ul>
+                {% block searchbar %}{% endblock %}
+            </div>
+        </div>
+    </nav>
+{% endblock %}

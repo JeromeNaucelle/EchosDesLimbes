@@ -1,0 +1,63 @@
+{% extends CMS_TEMPLATE %}
+{% load django_bootstrap5 sekizai_tags %}
+
+
+
+{% block cms_content %}
+
+{% block "js" %}
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+{% endblock %}
+
+{{ form.media }}
+
+{% block "css" %}
+<style>
+    fieldset {
+        border: solid 1px;
+        border-radius: 25px;
+        padding: 1em;
+        margin-bottom: 2em;
+    }
+
+    .submit_btn {
+        width: 50%;
+    }
+</style>
+{% endblock %}
+
+    <h2 class="pb-4">{{ title }}</h2>
+    <p>
+        Ces informations doivent être renseignées de bonne foi et avant toute participation à l'une de nos aventure, de façon à permettre une organisation et une sécurité optimale.
+    </p>
+    <form action="{{ url_validation }}" method="post">
+        {% csrf_token %}
+        <fieldset>
+            <legend>Profil utilisateur</legend>
+            <p>
+                <div>Prénom : {{requested_user.first_name}}</div>
+                <div>Nom : {{requested_user.last_name}}</div> 
+            </p>
+            {% bootstrap_field form.pseudos %}
+            {% bootstrap_field form.birthdate %}
+        </fieldset>
+
+        <fieldset>
+            <legend>Informations de sécurité</legend>
+            {% bootstrap_field form.food %}
+            <br/>
+            {% bootstrap_field form.xp_gn %}
+            <br/>
+            {% bootstrap_field form.unwanted_people %}
+            <br/>
+            {% bootstrap_field form.fears %}
+            <br/>
+            {% bootstrap_field form.triggers %}
+            <br/>
+            {% bootstrap_field form.emergency_contact %}
+        </fieldset>
+        <div style="text-align: center;">
+            {% bootstrap_button button_type="submit" content="Valider" extra_classes="submit_btn" %}
+        </div>
+    </form>
+{% endblock %}

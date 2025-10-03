@@ -1,0 +1,5 @@
+Bonjour {{user}},
+Afin de compléter la création de votre compte sur les site des Echos des Limbes, merci de vous rendre à l'adresse suivante :
+{{scheme}}://{{site}}/accounts/activate/?activation_key={{activation_key}}
+
+A très bientôt dans votre univers

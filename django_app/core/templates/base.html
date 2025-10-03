@@ -1,0 +1,48 @@
+{% extends "bootstrap5/base.html" %}
+{% load static cms_tags menu_tags sekizai_tags %}
+
+
+{% block navbar %}
+    <nav class="navbar {% block navbar_options %}navbar-expand-lg navbar-dark bg-dark{% endblock %}">
+        <div class="container">
+            <a class="navbar-brand" href="/">{% block brand %}{% endblock %}</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">{% block menubar %}{% show_menu 0 100 100 100 'bootstrap5/menu.html' %}{% endblock %}</ul>
+                {% block searchbar %}{% endblock %}
+                <ul class="navbar-nav mb-2 mb-lg-0 text-right me-5">
+                    {% if request.user.is_authenticated %}
+                    <li class="nav-item">
+                        <a href="{% url 'user_logout' %}" class="nav-link">{{ request.user }} <i class="fa-solid fa-user"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user_logout' %}"><span>Logout <i class="fa-solid fa-right-to-bracket"></i></span></a>
+                        
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        
+                        <a class="nav-link" href="{% url 'login' %}"><span>Login <i class="fa-solid fa-right-to-bracket"></i></span></a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+
+
+{% block content %}
+<div class="container" id="main-content">
+    <section class="content">
+        {% placeholder "Page Content" %}
+        {% block cms_content %} {% endblock %}
+    </section>
+</div>
+{% block footer %}
+    {% include "footer.html" %}
+{% endblock %}
+
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends CMS_TEMPLATE %}
+{% load sekizai_tags %}
+
+{% block page_head %}
+    {% addtoblock "css" %}
+        <style>
+
+        .table > :not(caption) > * > * {
+                background-color: rgba(255,255,255,0.3);
+                color: white;
+            }
+
+        .table > thead > * > * {
+                background-color: rgba(255,255,255,0.5);
+                color: rgb(0, 0, 0);
+                font-size: 1.2rem;
+                border: none;
+            }
+
+        
+            
+
+        </style>
+    {% endaddtoblock %}
+{% endblock %}
+
+{% block cms_content %}
+        <h2 class="mb-5">Mes inscriptions</h2>
+    
+        {% for larp in larps %}
+        <table class="w-100 table">
+            <thead>
+                <tr>
+                    <th scope="col" style="width:60%">
+                        {{ larp }}
+                    </th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                    <tr class="">
+                    {% for inscription in inscriptions %}
+                        {% if inscription.opus.larp.pk == larp.pk %}
+                        <td class="">{{inscription.opus}}</td>
+                        <td><a href="{% url 'larp:security_form' inscription.opus.pk %}">Sécurité</a></td>
+                        <td>Fiche PJ</td>
+                        <td>Fiche PNJ</td>
+                        {% endif %}
+                    {% endfor %}
+                    </tr>
+            </tbody>
+        </table>
+        {% endfor %}
+
+{% endblock %}

@@ -1,0 +1,33 @@
+"""
+URL configuration for cms project.
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/5.2/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
+from django.urls import path
+
+from . import views
+app_name = "larp"
+
+urlpatterns = [
+    path('', views.character_list, name='character_list'),
+    path('my_inscriptions', views.my_inscriptions, name='my_inscriptions'),
+    path('character_list', views.character_list, name='character_list'),
+    path('profile', views.profile, name='profile'),
+    path('test', views.test, name='test'),
+    path('pnj_form/<int:pk>', views.pnj_form, name='pnj_form'),
+    path('create_pj/<int:larp_id>', views.create_pj, name='create_pj'),
+    path('edit_pj/<int:pjinfos_id>', views.edit_pj, name='edit_pj'),
+    path('orga_gn_list', views.orga_gn_list, name='orga_gn_list'),
+    path('orga_gn/<int:larp_id>', views.orga_gn, name='orga_gn')
+]

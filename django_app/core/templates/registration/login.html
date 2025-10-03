@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block cms_content %}
+<div class="container" style="max-width: 800px;">
+
+    <div class="">
+        <h2>Login</h2>
+    </div>
+  
+  
+    <!-- formulaire -->
+    <div class="">
+        
+        <form action="{{validation_url}}" method="post">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+                <button type="submit" class="btn btn-primary mt-2">Valider</button>
+        </form>
+    </div>
+    <!-- Proposition de création de compte -->
+     <div class="text-center mt-2">
+         <p class="">Pas encore de compte ? <a href="{% url 'django_registration_register' %}">Créez en un !</a></p>
+         <p class="">Mot de passe perdu ? <a href="{% url 'password_reset' %}">Réinitialiser le !</a></p>
+     </div>
+</div>
+{% endblock %}

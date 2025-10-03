@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block cms_content %}
+
+<div class="">
+    <h1>Activation de compte</h1>
+    <h4>Bienvenue</h4>
+</div>
+<div class="pt-5">
+    <!-- Titre du processus -->
+
+    <!-- Titre du formulaire -->
+    <div class="">
+        
+        <p>Votre compte est désormais actif, à vous de jouer !</p>
+        <p>
+            <a href="{% url 'login' %}?next={% url 'larp:profile' %}"><button type="button" class="btn btn-primary">Se connecter</button></a>
+        </p>
+    </div>
+</div>
+
+{% endblock %}
+
+

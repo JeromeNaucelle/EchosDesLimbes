@@ -1,0 +1,15 @@
+{% load sekizai_tags cms_tags djangocms_link_tags %}
+
+
+<div class="background_item">
+    <span class="alpha_background"></span>
+    <img class="image-background" 
+        src="{{image_url}}">
+    <div class="centered">
+        <div class="link_background">
+            <a href="{{ instance.link|to_url  }}" style="text-decoration: none;">{{instance.text}}</a>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block cms_content %}
+
+<h1>Création de compte</h1>
+
+{% if errors %}
+    {% for field, error in errors %}
+    <p><strong>{{ field }}: {{ error }}</strong></p>
+    {% endfor %}
+{% endif %}
+
+
+<form action="{{validation_url}}" method="post">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    <p class="mt-2">
+        <button type="submit" class="btn btn-primary" style="width:120px">Valider &nbsp; ❯</button>
+    </p>
+</form>
+{% endblock %}

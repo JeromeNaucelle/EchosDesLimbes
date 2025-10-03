@@ -1,0 +1,8 @@
+{% extends 'larp/larp_base.html' %}
+{% load django_vite %}
+
+{% block meta %}
+{% vite_hmr_client %}
+{% vite_react_refresh %}
+{% vite_asset 'app.tsx' %}
+{% endblock meta %}

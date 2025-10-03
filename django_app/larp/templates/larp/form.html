@@ -1,0 +1,21 @@
+{% extends CMS_TEMPLATE %}
+{% load django_bootstrap5 %}
+
+{% block cms_content %}
+{% block "css" %}
+<style>
+    submit_btn {
+        width: 50%;
+    }
+</style>
+{% endblock %}
+
+    <h2 class="pb-4">{{ title }}</h2>
+    <form action="{{ url_validation }}" method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <div style="text-align: center;">
+            {% bootstrap_button button_type="submit" content="Valider" extra_classes="submit_btn" %}
+        </div>
+    </form>
+{% endblock %}

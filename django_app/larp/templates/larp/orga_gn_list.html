@@ -1,0 +1,51 @@
+{% extends CMS_TEMPLATE %}
+{% load sekizai_tags %}
+
+{% block page_head %}
+    {% addtoblock "css" %}
+        <style>
+
+        .table > :not(caption) > * > * {
+                background-color: rgba(255,255,255,0.3);
+                color: white;
+            }
+
+        .table > thead > * > * {
+                background-color: rgba(255,255,255,0.5);
+                color: rgb(0, 0, 0);
+                font-size: 1.2rem;
+                border: none;
+            }
+
+        
+            
+
+        </style>
+    {% endaddtoblock %}
+{% endblock %}
+
+{% block cms_content %}
+        <h2 class="mb-5">Mes GNs en tant qu'Orga</h2>
+    
+        {% if larps.count == 0 %}
+        <h4 class="mb-5">Il semble que vous ne soyez pas Orga actuellement</h4>
+        {% else %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">
+                        Nom du GN
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                    <tr class="">
+                    {% for larp in larps %}
+                    <td><a href="{% url 'larp:orga_gn' larp_id=larp.pk%}"><div class="w-100">{{larp}}</div></a></td>
+                    {% endfor %}
+                    </tr>
+            </tbody>
+        </table>
+        {% endif %}
+
+{% endblock %}

@@ -1,0 +1,11 @@
+Bonjour {{user}},
+Merci de nous rejoindre dans l'aventure. Nous vous confirmons l'achat de votre ticket pour {{ opus }}.
+
+------------------
+
+Ticket : {{ opus }}     Prix : {{ price }}€
+
+------------------
+
+A bientôt en jeu !
+Les échos des limbes

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block cms_content %}
+
+<h1 class="card">Erreur à l'activation</h1>
+<h3 class="">
+    {% if activation_error.code == 'already_activated' %}
+    <p>
+        <strong>Ce compte est déjà actif</strong> : vous devriez pouvoir vous authentifier en entrant les identifiants que 
+        vous avez fournis lors de l'inscription.
+    </p>
+    {% endif %}
+    {% if activation_error.code == 'activation_key' %}
+    <p>
+        <strong>Cette clé d'activation est invalide</strong> : vérifiez que vous avez correctement copié le lien fourni dans le mail d'activation.
+    </p>
+    {% endif %}
+    {% if activation_error.code == 'expired' %}
+    <p>
+        <strong>Cette clé d'activation est expirée</strong> : merci de recommencer la procédure d'inscription. 
+        Ne tardez pas trop, le lien d'activation n'est valable que quelques jours.
+    </p>
+    {% endif %}
+</h3>
+{% endblock %}

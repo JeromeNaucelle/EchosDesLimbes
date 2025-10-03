@@ -1,0 +1,54 @@
+{% extends CMS_TEMPLATE %}
+{% load django_bootstrap5 sekizai_tags %}
+
+
+
+{% block cms_content %}
+    <h1>Mes fiches</h1>
+    </br>
+
+    {% if can_add_character %}
+    <button ><i class="fa-solid fa-plus"></i> Créer un personnage</button>
+    {% endif %}
+
+
+        {% for larp, inscription in larp_inscriptions.items %}
+        <h3>{{ larp }}</h3>
+        <table class="w-100 table">
+            <thead>
+                <tr>
+                        <th>Type</th>
+                        <th></th>
+                        <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if inscription.pnj_infos %}
+                    <tr class="">
+                        <td>Fiche PNJ</td>
+                        <td><a href="{% url 'larp:pnj_form' inscription.pnj_infos.pk %}">Voir/Modifier mes informations</a></td>
+                        <td>TODO</td>
+                    </tr>
+                {% endif %}
+                {% for character in inscription.pj_infos %}
+                    <tr class="">
+                        <td>Fiche Personnage</td>
+                        <td><a href="{% url 'larp:edit_pj' character.pk %}">{{ character.name }} ({{ character.faction }})</a></td>
+                        <td>TODO</td>
+                    </tr>
+                {% endfor %}
+                {% if inscription.can_add_character %}
+                    <tr class="">
+                        <td><a href="{% url 'larp:create_pj' inscription.larp_id %}"><button class="btn-primary"><i class="fa-solid fa-plus"></i> Céer un personnage</button></a></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+    {% empty %}
+        <h4>Vous n'êtes inscrit à aucun GN actuellement</h4>
+    {% endfor %}
+
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block cms_content %}
+<style>
+.image-background {
+        
+  border: none;
+  bottom: 0;
+  box-shadow: none;
+  
+  left: 0;
+  margin: 0;
+  max-height: none;
+  max-width: none;
+  object-fit: cover;
+  outline: none;
+  padding: 0;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%; 
+  overflow-wrap: break-word; 
+  word-break: break-word; 
+  z-index: 1; 
+  font-size: 2rem;
+}
+
+.alpha_background {
+  bottom: 0;
+  left: 0;
+  opacity: .4;
+  position: absolute;
+  right: 0;
+  top: 0;
+  background-color: black;
+}
+
+.background_item {
+    border-radius: 50px; 
+    aspect-ratio: 16/9; 
+    overflow: clip; 
+    position: relative; 
+    text-align: center; 
+    /*max-height: 250px;*/
+    flex: 1 1 0px;
+}
+
+.link_background {
+    flex-basis: 100%; 
+    width: 100%; 
+    background-color: #ffffff55;
+}
+
+.menu_background {
+    display: flex; 
+    gap: 16px;
+    font-family: 'Literata';
+    max-height: 250px;
+}
+</style>
+
+<div class="menu_background">
+    <div class="background_item">
+        <span class="alpha_background"></span>
+        <img class="image-background" 
+            src="https://lesechosdeslimbes.eu2.copilhost.cloud/wp-content/uploads/2025/01/the_source_by_somatonic_ddszxw4-fullview.jpg">
+        <div class="centered">
+            <div class="link_background">
+                <a href="#" style="text-decoration: none;">Nos univers</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="background_item">
+        <span class="alpha_background"></span>
+        <img class="image-background" 
+            src="https://lesechosdeslimbes.eu2.copilhost.cloud/wp-content/uploads/2025/01/20240802_161-1.jpg">
+        <div class="centered">
+            <div class="link_background">
+                <a href="#" style="text-decoration: none;">Qu'est-ce que le GN ?</a>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+{% endblock %}

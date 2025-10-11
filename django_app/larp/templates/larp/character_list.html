@@ -33,7 +33,7 @@
                 {% for character in inscription.pj_infos %}
                     <tr class="">
                         <td>Fiche Personnage</td>
-                        <td><a href="{% url 'larp:edit_pj' character.pk %}">{{ character.name }} ({{ character.faction }})</a></td>
+                        <td><a href="{% url 'larp:view_pj' character.pk %}">{{ character.name }} ({{ character.faction }})</a></td>
                         <td>TODO</td>
                     </tr>
                 {% endfor %}

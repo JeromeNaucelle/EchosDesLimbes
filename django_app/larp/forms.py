@@ -108,3 +108,12 @@ class PjInfosForm(forms.ModelForm):
             self.fields['faction'].initial = inscription.faction_id
 
 
+class BgAnswerForm(forms.Form):
+    choice = forms.ChoiceField(widget=forms.RadioSelect, label="")
+    player_text = forms.CharField(widget=forms.Textarea, required=False, label="Vous pouvez ajouter des éléments (restera possible plus tard)")
+
+    def __init__(self, *args, **kwargs):
+        choices_qs = kwargs.pop('choices_qs')
+        super().__init__(*args, **kwargs)
+        # Display the choice text for the radio options
+        self.fields['choice'].choices = [(str(c.pk), c.text or c.short_name) for c in choices_qs]

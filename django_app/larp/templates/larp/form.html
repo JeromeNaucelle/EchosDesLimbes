@@ -11,6 +11,9 @@
 {% endblock %}
 
     <h2 class="pb-4">{{ title }}</h2>
+    {% if question %}
+    <p class="mb-3">{{ question }}</p>
+    {% endif %}
     <form action="{{ url_validation }}" method="post">
         {% csrf_token %}
         {% bootstrap_form form %}

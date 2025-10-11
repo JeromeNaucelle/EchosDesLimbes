@@ -249,6 +249,7 @@ class PjInfos(models.Model):
     emotions    = models.CharField(choices=EMOTION_PREFERENCE.choices(), blank=False, default=[EMOTION_PREFERENCE.SOFT], max_length=25)
     objectives  = models.TextField(verbose_name="Objectifs de jeu", blank=True, default='')
     bg_choices = models.ManyToManyField(BgChoice, blank=True, through="Character_Bg_choices")
+    bg_completed = models.BooleanField(default=False, verbose_name="Background complété")
 
     def get_parts(self) -> list[str]: 
         result = []

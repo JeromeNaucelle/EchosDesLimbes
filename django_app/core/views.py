@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.http import HttpRequest
 from django.shortcuts import render
 
 
@@ -10,7 +11,11 @@ def user_logout(request):
     logout(request)
     return render(request, 'registration/logged_out.html', {})
 
-def test(request):
+def test(request: HttpRequest):
+    from larp.models import Larp
+    user_groups_id = request.user.groups.all().values_list('pk')
+    user_orga_larps = Larp.objects.filter(orga_group_id__in=user_groups_id)
+    
     return render(request, 'test.html', {})
 
 

@@ -28,6 +28,8 @@ urlpatterns = [
     path('pnj_form/<int:pk>', views.pnj_form, name='pnj_form'),
     path('create_pj/<int:inscription_id>', views.create_pj, name='create_pj'),
     path('edit_pj/<int:pjinfos_id>', views.edit_pj, name='edit_pj'),
+    path('view_pj/<int:pjinfos_id>', views.view_pj, name='view_pj'),
+    path('complete_bg/<int:pjinfo_id>', views.complete_bg, name='complete_bg'),
     path('orga_gn_list', views.orga_gn_list, name='orga_gn_list'),
     path('orga_gn/<int:larp_id>', views.orga_gn, name='orga_gn')
 ]

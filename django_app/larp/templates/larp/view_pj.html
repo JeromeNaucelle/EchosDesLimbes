@@ -101,6 +101,9 @@
                 </a>
                 {% endif %}
                 {% endif %}
+                <a href="{% url 'larp:view_pj_pdf' pj_infos.pk %}" class="btn btn-success">
+                    <i class="fa-solid fa-file-pdf"></i> Exporter en PDF
+                </a>
                 <a href="{% url 'larp:character_list' %}" class="btn btn-outline-secondary">
                     <i class="fa-solid fa-arrow-left"></i> Retour à la liste
                 </a>

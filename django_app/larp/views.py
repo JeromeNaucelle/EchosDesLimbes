@@ -4,6 +4,14 @@ from django.urls import reverse
 from django.http.request import HttpRequest
 from django.contrib.auth.models import User, Group
 from django.db import models
+from django.http import HttpResponse
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.units import inch
+from reportlab.lib import colors
+from io import BytesIO
 
 from .models import Profile, Inscription, PnjInfos,PjInfos, Larp, Opus, BgStep, BgChoice, Character_Bg_choices
 from .forms import PnjInfosForm, PjInfosForm, BgAnswerForm
@@ -232,6 +240,123 @@ def view_pj(request: HttpRequest, pjinfos_id: int):
     }
     
     return render(request, 'larp/view_pj.html', context)
+
+
+@login_required
+def view_pj_pdf(request: HttpRequest, pjinfos_id: int):
+    """Generate PDF export of PjInfos information"""
+    pj_infos = PjInfos.objects.select_related('faction', 'larp', 'user').get(pk=pjinfos_id)
+    
+    # Check if user has permission to view this character
+    if pj_infos.user != request.user:
+        has_orga_permission(request.user, pj_infos.larp)
+    
+    # Get background choices for this character
+    bg_choices = Character_Bg_choices.objects.filter(pjInfos=pj_infos).select_related('bgchoice__bg_step').order_by('step')
+    
+    # Create PDF response
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="personnage_{pj_infos.name}_{pj_infos.larp.name}.pdf"'
+    
+    # Create PDF document
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=18)
+    
+    # Get styles
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=18,
+        spaceAfter=30,
+        alignment=1,  # Center alignment
+    )
+    heading_style = ParagraphStyle(
+        'CustomHeading',
+        parent=styles['Heading2'],
+        fontSize=14,
+        spaceAfter=12,
+        spaceBefore=20,
+    )
+    
+    # Build PDF content
+    story = []
+    
+    # Title
+    story.append(Paragraph(f"Fiche Personnage: {pj_infos.name}", title_style))
+    story.append(Spacer(1, 20))
+    
+    # General Information
+    story.append(Paragraph("Informations générales", heading_style))
+    
+    general_data = [
+        ['Nom du personnage:', pj_infos.name],
+        ['Joueur:', f"{pj_infos.user.first_name} {pj_infos.user.last_name} ({pj_infos.user.username})"],
+        ['GN:', pj_infos.larp.name],
+        ['Faction:', pj_infos.faction.name],
+        ['Préférence émotionnelle:', pj_infos.get_emotions_display()],
+    ]
+    
+    general_table = Table(general_data, colWidths=[2*inch, 3*inch])
+    general_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.lightgrey),
+        ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
+        ('BACKGROUND', (1, 0), (1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black)
+    ]))
+    
+    story.append(general_table)
+    story.append(Spacer(1, 20))
+    
+    # Skills
+    story.append(Paragraph("Compétences", heading_style))
+    story.append(Paragraph(f"<b>Compétences actuelles:</b>", styles['Normal']))
+    story.append(Paragraph(pj_infos.skills.replace('\n', '<br/>'), styles['Normal']))
+    
+    if pj_infos.last_learned:
+        story.append(Spacer(1, 12))
+        story.append(Paragraph(f"<b>Dernière compétence apprise:</b> {pj_infos.last_learned}", styles['Normal']))
+    
+    story.append(Spacer(1, 20))
+    
+    # Objectives
+    if pj_infos.objectives:
+        story.append(Paragraph("Objectifs de jeu", heading_style))
+        story.append(Paragraph(pj_infos.objectives.replace('\n', '<br/>'), styles['Normal']))
+        story.append(Spacer(1, 20))
+    
+    # Background Choices
+    if bg_choices:
+        story.append(Paragraph("Choix de background", heading_style))
+        
+        for bg_choice in bg_choices:
+            story.append(Paragraph(f"<b>Étape {bg_choice.step}: {bg_choice.bgchoice.bg_step.short_name}</b>", styles['Normal']))
+            story.append(Paragraph(f"<i>{bg_choice.bgchoice.bg_step.question}</i>", styles['Normal']))
+            story.append(Spacer(1, 6))
+            
+            choice_text = bg_choice.bgchoice.text or bg_choice.bgchoice.short_name
+            story.append(Paragraph(f"<b>Choix sélectionné:</b> {choice_text}", styles['Normal']))
+            
+            if bg_choice.player_text:
+                story.append(Spacer(1, 6))
+                story.append(Paragraph(f"<b>Commentaire du joueur:</b>", styles['Normal']))
+                story.append(Paragraph(bg_choice.player_text.replace('\n', '<br/>'), styles['Normal']))
+            
+            story.append(Spacer(1, 15))
+    
+    # Build PDF
+    doc.build(story)
+    
+    # Get PDF content
+    pdf_content = buffer.getvalue()
+    buffer.close()
+    
+    response.write(pdf_content)
+    return response
 
 
 @login_required

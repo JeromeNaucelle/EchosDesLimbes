@@ -89,15 +89,22 @@ class PjInfosForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        larp = kwargs.pop('larp')
+        if 'inscription' in kwargs:
+            inscription = kwargs.pop('inscription')
+            larp = inscription.opus.larp
+        else:
+            larp = kwargs.pop('larp')
         user = kwargs.pop('user')
+
         orga = has_orga_permission(user, larp, False)
         already_existing = True if 'instance' in kwargs else False
         super(PjInfosForm, self).__init__(*args, **kwargs)
         if not orga:
             self.fields['objectives'].disabled = True
-
-        if already_existing:
-            self.fields['faction'].disabled = True
-
         self.fields['faction'].label = larp.factions_name
+        self.fields['faction'].disabled = True
+
+        if not already_existing:
+            self.fields['faction'].initial = inscription.faction_id
+
+

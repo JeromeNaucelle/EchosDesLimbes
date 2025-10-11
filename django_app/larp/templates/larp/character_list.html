@@ -39,7 +39,7 @@
                 {% endfor %}
                 {% if inscription.can_add_character %}
                     <tr class="">
-                        <td><a href="{% url 'larp:create_pj' inscription.larp_id %}"><button class="btn-primary"><i class="fa-solid fa-plus"></i> Céer un personnage</button></a></td>
+                        <td><a href="{% url 'larp:create_pj' inscription.inscription_id %}"><button class="btn-primary"><i class="fa-solid fa-plus"></i> Céer un personnage</button></a></td>
                         <td></td>
                         <td></td>
                     </tr>

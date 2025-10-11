@@ -9,6 +9,7 @@ class CurrentInscription():
         self.created_at = inscription.created_at
         self.can_add_character = False
         self.larp_id = inscription.opus.larp.pk
+        self.inscription_id = inscription.pk
 
         if self.access_type == larp_models.AccessType.PJ or self.access_type == larp_models.AccessType.PNJF:
             self.pj_infos = larp_models.PjInfos.objects.filter(user=inscription.user)

@@ -37,11 +37,12 @@ def pnj_form(request: HttpRequest, pk):
     
 
 @login_required
-def create_pj(request: HttpRequest, larp_id):
-    url_validation = reverse('larp:create_pj', kwargs={'larp_id':larp_id})
-    larp = Larp.objects.get(pk=larp_id)
+def create_pj(request: HttpRequest, inscription_id):
+    url_validation = reverse('larp:create_pj', kwargs={'inscription_id':inscription_id})
+    inscription = Inscription.objects.select_related("opus__larp").get(pk=inscription_id)
+    larp = inscription.opus.larp
     if request.method == "GET":
-        form = PjInfosForm(larp=larp, user=request.user)
+        form = PjInfosForm(inscription=inscription, user=request.user)
         return render(request, 'larp/form.html', 
                 {
                     'title': "Création de personnage",
@@ -50,11 +51,11 @@ def create_pj(request: HttpRequest, larp_id):
 
 
     if request.method == "POST":
-        form = PjInfosForm(request.POST, larp=larp, user=request.user)
+        form = PjInfosForm(request.POST, inscription=inscription, user=request.user)
         if form.is_valid():
             instance = form.save(commit=False)
             instance.user = request.user
-            instance.larp_id = larp_id
+            instance.larp = larp
             instance.save()
 
             return redirect(reverse('larp:edit_pj', kwargs={'pjinfos_id':instance.pk}))

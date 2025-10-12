@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.http.request import HttpRequest
 from django.contrib.auth.models import User, Group
 from django.db import models
+from django.db.models import Q
 from django.http import HttpResponse
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
@@ -376,7 +377,16 @@ def complete_bg(request: HttpRequest, pjinfo_id: int):
             'text': "Vous avez répondu à toutes les questions disponibles."
         })
 
-    choices_qs = BgChoice.objects.filter(bg_step=bg_step)
+    # Get all choices for this step
+    all_choices_qs = BgChoice.objects.filter(bg_step=bg_step)
+    
+    # Get choices already made by this character
+    character_choices = Character_Bg_choices.objects.filter(pjInfos=pj_infos).values_list('bgchoice', flat=True)
+    
+    # Filter choices based on requisit: only show choices with no requisit or where the requisit has been chosen
+    choices_qs = all_choices_qs.filter(
+        Q(requisit__isnull=True) | Q(requisit__in=character_choices)
+    )
 
     url_validation = reverse('larp:complete_bg', kwargs={'pjinfo_id': pjinfo_id})
 

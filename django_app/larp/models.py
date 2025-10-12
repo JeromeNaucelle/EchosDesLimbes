@@ -209,6 +209,7 @@ class BgChoice(models.Model):
     short_name = models.CharField(verbose_name="Nom (court)", max_length=20)
     text = models.TextField(default="", null=True)
     empty = models.BooleanField(default=False, verbose_name="A remplir par le joueur")
+    requisit = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, verbose_name="Prérequis")
 
 
 class Character_Bg_choices(models.Model):

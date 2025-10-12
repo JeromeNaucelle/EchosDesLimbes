@@ -26,7 +26,7 @@
                 {% if inscription.pnj_infos %}
                     <tr class="">
                         <td>Fiche PNJ</td>
-                        <td><a href="{% url 'larp:pnj_form' inscription.pnj_infos.pk %}">Voir/Modifier mes informations</a></td>
+                        <td><a href="{% url 'larp:view_pnj' inscription.pnj_infos.pk %}">Voir/Modifier mes informations</a></td>
                         <td>TODO</td>
                     </tr>
                 {% endif %}

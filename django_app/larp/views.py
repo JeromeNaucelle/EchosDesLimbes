@@ -39,6 +39,7 @@ def pnj_form(request: HttpRequest, pk):
         form = PnjInfosForm(request.POST, instance=instance, user=request.user)
         if form.is_valid():
             form.save()
+            return redirect(reverse('larp:view_pnj', kwargs={'pnjinfos_id': instance.pk}))
 
         return render(request, 'larp/form.html', 
                     {
@@ -348,6 +349,138 @@ def view_pj_pdf(request: HttpRequest, pjinfos_id: int):
                 story.append(Paragraph(bg_choice.player_text.replace('\n', '<br/>'), styles['Normal']))
             
             story.append(Spacer(1, 15))
+    
+    # Build PDF
+    doc.build(story)
+    
+    # Get PDF content
+    pdf_content = buffer.getvalue()
+    buffer.close()
+    
+    response.write(pdf_content)
+    return response
+
+
+@login_required
+def view_pnj(request: HttpRequest, pnjinfos_id: int):
+    """Display all information from a PnjInfos instance in read-only format"""
+    pnj_infos = PnjInfos.objects.select_related('larp', 'user').get(pk=pnjinfos_id)
+    
+    # Check if user has permission to view this PNJ info
+    # User can view their own PNJ info or be an orga for the larp
+    if pnj_infos.user != request.user:
+        has_orga_permission(request.user, pnj_infos.larp)
+    
+    context = {
+        'title': f"Fiche PNJ: {pnj_infos.user.first_name} {pnj_infos.user.last_name}",
+        'pnj_infos': pnj_infos,
+        'larp': pnj_infos.larp,
+        'user': pnj_infos.user,
+    }
+    
+    return render(request, 'larp/view_pnj.html', context)
+
+
+@login_required
+def view_pnj_pdf(request: HttpRequest, pnjinfos_id: int):
+    """Generate PDF export of PnjInfos information"""
+    pnj_infos = PnjInfos.objects.select_related('larp', 'user').get(pk=pnjinfos_id)
+    
+    # Check if user has permission to view this PNJ info
+    if pnj_infos.user != request.user:
+        has_orga_permission(request.user, pnj_infos.larp)
+    
+    # Create PDF response
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="pnj_{pnj_infos.user.first_name}_{pnj_infos.user.last_name}_{pnj_infos.larp.name}.pdf"'
+    
+    # Create PDF document
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=18)
+    
+    # Get styles
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=18,
+        spaceAfter=30,
+        alignment=1,  # Center alignment
+    )
+    heading_style = ParagraphStyle(
+        'CustomHeading',
+        parent=styles['Heading2'],
+        fontSize=14,
+        spaceAfter=12,
+        spaceBefore=20,
+    )
+    
+    # Build PDF content
+    story = []
+    
+    # Title
+    story.append(Paragraph(f"Fiche PNJ: {pnj_infos.user.first_name} {pnj_infos.user.last_name}", title_style))
+    story.append(Spacer(1, 20))
+    
+    # General Information
+    story.append(Paragraph("Informations générales", heading_style))
+    
+    general_data = [
+        ['Joueur:', f"{pnj_infos.user.first_name} {pnj_infos.user.last_name} ({pnj_infos.user.username})"],
+        ['GN:', pnj_infos.larp.name],
+        ['Préférence horaire:', pnj_infos.get_prefered_time_display() if pnj_infos.prefered_time else 'Non spécifié'],
+        ['Action de nuit:', 'Oui' if pnj_infos.nigth_action else 'Non' if pnj_infos.nigth_action is not None else 'Non spécifié'],
+    ]
+    
+    general_table = Table(general_data, colWidths=[2*inch, 3*inch])
+    general_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.lightgrey),
+        ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
+        ('BACKGROUND', (1, 0), (1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black)
+    ]))
+    
+    story.append(general_table)
+    story.append(Spacer(1, 20))
+    
+    # Preferences
+    story.append(Paragraph("Préférences de jeu", heading_style))
+    
+    preferences_data = [
+        ['Logistique vs Rôles:', pnj_infos.get_logistic_or_role_display() if pnj_infos.logistic_or_role is not None else 'Non spécifié'],
+        ['Niveau d\'importance:', pnj_infos.get_importance_display() if pnj_infos.importance is not None else 'Non spécifié'],
+    ]
+    
+    preferences_table = Table(preferences_data, colWidths=[2*inch, 3*inch])
+    preferences_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.lightgrey),
+        ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
+        ('BACKGROUND', (1, 0), (1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black)
+    ]))
+    
+    story.append(preferences_table)
+    story.append(Spacer(1, 20))
+    
+    # Talents
+    if pnj_infos.talent:
+        story.append(Paragraph("Talents particuliers", heading_style))
+        story.append(Paragraph(pnj_infos.talent.replace('\n', '<br/>'), styles['Normal']))
+        story.append(Spacer(1, 20))
+    
+    # Organizer Information
+    if pnj_infos.info_orga:
+        story.append(Paragraph("Informations pour l'organisation", heading_style))
+        story.append(Paragraph(pnj_infos.info_orga.replace('\n', '<br/>'), styles['Normal']))
+        story.append(Spacer(1, 20))
     
     # Build PDF
     doc.build(story)

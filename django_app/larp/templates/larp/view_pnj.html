@@ -1,0 +1,117 @@
+{% extends CMS_TEMPLATE %}
+{% load django_bootstrap5 %}
+
+{% block cms_content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="pb-4">{{ title }}</h2>
+            
+            <!-- PNJ Basic Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">Informations générales</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Joueur:</strong> {{ user.first_name }} {{ user.last_name }} ({{ user.username }})</p>
+                            <p><strong>GN:</strong> {{ larp.name }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Préférence horaire:</strong> 
+                                {% if pnj_infos.prefered_time %}
+                                    {{ pnj_infos.get_prefered_time_display }}
+                                {% else %}
+                                    Non spécifié
+                                {% endif %}
+                            </p>
+                            <p><strong>Action de nuit:</strong> 
+                                {% if pnj_infos.nigth_action is None %}
+                                    Non spécifié
+                                {% elif pnj_infos.nigth_action %}
+                                    Oui
+                                {% else %}
+                                    Non
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Preferences -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">Préférences de jeu</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Logistique vs Rôles:</strong> 
+                                {% if pnj_infos.logistic_or_role is not None %}
+                                    {{ pnj_infos.get_logistic_or_role_display }}
+                                {% else %}
+                                    Non spécifié
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Niveau d'importance:</strong> 
+                                {% if pnj_infos.importance is not None %}
+                                    {{ pnj_infos.get_importance_display }}
+                                {% else %}
+                                    Non spécifié
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Talents -->
+            {% if pnj_infos.talent %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">Talents particuliers</h4>
+                </div>
+                <div class="card-body">
+                    <div class="border p-3" style="background-color: #f8f9fa;">
+                        {{ pnj_infos.talent|linebreaks }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Organizer Information -->
+            {% if pnj_infos.info_orga %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">Informations pour l'organisation</h4>
+                </div>
+                <div class="card-body">
+                    <div class="border p-3" style="background-color: #f8f9fa;">
+                        {{ pnj_infos.info_orga|linebreaks }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Action Buttons -->
+            <div class="d-flex gap-2 mb-4">
+                {% if pnj_infos.user == request.user %}
+                <a href="{% url 'larp:pnj_form' pnj_infos.pk %}" class="btn btn-primary">
+                    <i class="fa-solid fa-edit"></i> Modifier les informations
+                </a>
+                {% endif %}
+                <a href="{% url 'larp:view_pnj_pdf' pnj_infos.pk %}" class="btn btn-success">
+                    <i class="fa-solid fa-file-pdf"></i> Exporter en PDF
+                </a>
+                <a href="{% url 'larp:character_list' %}" class="btn btn-outline-secondary">
+                    <i class="fa-solid fa-arrow-left"></i> Retour à la liste
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

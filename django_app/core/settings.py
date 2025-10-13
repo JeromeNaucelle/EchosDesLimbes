@@ -23,11 +23,20 @@ from django.utils.translation import gettext_lazy as _
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-try:
-    os.environ["EASY_HOSTER"]
+def is_prod_env() -> bool:
+    try:
+        os.environ["EASY_HOSTER"]
+        return True
+    except KeyError:
+        return False
+
+IS_PROD_ENV = is_prod_env()
+
+
+if IS_PROD_ENV:
     load_dotenv(os.path.join(BASE_DIR, "..", "prod.env"))
     print("prod.env loaded")
-except KeyError:
+else:
     load_dotenv(os.path.join(BASE_DIR, "..", "dev.env"))
     print("dev.env loaded")
 
@@ -181,7 +190,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-try:
+if IS_PROD_ENV:
     database = os.environ["EASY_HOSTER"]
     DATABASES = { 
         "default": {
@@ -192,7 +201,7 @@ try:
         }
     }   
     print("Connected to MySQL PROD Database")
-except KeyError:
+else:
     DATABASES = { 
         "default": {
             "ENGINE": "django.db.backends.mysql",
@@ -311,12 +320,13 @@ INTERNAL_IPS = [
 # Add project-wide static files directory
 # https://docs.djangoproject.com/en/5.2/ref/settings/#media-root
 
-if DEBUG:
-    MEDIA_ROOT = str(BASE_DIR.parent / "media")
-    MEDIA_URL = "media/"
-else:
+
+if IS_PROD_ENV:
     MEDIA_ROOT = "/home/lesechos/media.lesechosdeslimbes.fr"
     MEDIA_URL = "http://media.lesechosdeslimbes.fr/"
+else:
+    MEDIA_ROOT = str(BASE_DIR.parent / "media")
+    MEDIA_URL = "media/"
 
 
 # We need this for django form posting

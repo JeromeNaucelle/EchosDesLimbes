@@ -143,7 +143,8 @@ def edit_pj(request: HttpRequest, pjinfos_id):
     if request.method == "POST":
         form = PjInfosForm(request.POST, instance=pj_infos, larp=larp, user=request.user)
         if form.is_valid():
-            form.save()
+            instance = form.save()
+            return redirect(reverse('larp:view_pj', kwargs={'pjinfos_id': instance.pk}))
 
         return render(request, 'larp/form.html', 
                     {

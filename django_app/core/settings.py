@@ -23,22 +23,9 @@ from django.utils.translation import gettext_lazy as _
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-def is_prod_env() -> bool:
-    try:
-        os.environ["EASY_HOSTER"]
-        return True
-    except KeyError:
-        return False
 
-IS_PROD_ENV = is_prod_env()
-
-
-if IS_PROD_ENV:
-    load_dotenv(os.path.join(BASE_DIR, "..", "prod.env"))
-    print("prod.env loaded")
-else:
-    load_dotenv(os.path.join(BASE_DIR, "..", "dev.env"))
-    print("dev.env loaded")
+load_dotenv(os.path.join(BASE_DIR, "..", ".env"))
+ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
 
 
 # Quick-start development settings - unsuitable for production
@@ -50,7 +37,7 @@ SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", 'False').lower() in ('true', '1')
 
-ALLOWED_HOSTS = ["localhost", "lesechosdeslimbes.fr", "www.lesechosdeslimbes.fr"]
+ALLOWED_HOSTS = ["localhost", "lesechosdeslimbes.fr", "test.lesechosdeslimbes.fr"]
 
 
 # Application definition
@@ -190,38 +177,15 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-if IS_PROD_ENV:
-    database = os.environ["EASY_HOSTER"]
-    DATABASES = { 
-        "default": {
-            "ENGINE": "django.db.backends.mysql",
-            "OPTIONS": {
-                "read_default_file": os.path.join(BASE_DIR, "..", "my.cnf"),
-            },
-        }
-    }   
-    print("Connected to MySQL PROD Database")
-else:
-    DATABASES = { 
-        "default": {
-            "ENGINE": "django.db.backends.mysql",
-            "OPTIONS": {
-                "read_default_file": os.path.join(BASE_DIR, "..", "dev-my.cnf"),
-            },
-        }
-    }   
-    print("Connected to MySQL DEV Database")
-    """
-    """
-    """
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, '..', 'db.sqlite3')
-        }
+DATABASES = { 
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "OPTIONS": {
+            "read_default_file": os.path.join(BASE_DIR, "..", "my.cnf"),
+        },
     }
-    print("Connected to SQLite Database")
-    """
+}   
+print("Connected to MySQL Database")
 
 
 # Password validation
@@ -257,7 +221,7 @@ LANGUAGES = [
 
 TIME_ZONE = 'UTC'
 
-USE_I18N = True
+USE_I18N = False
 USE_L10N = True
 USE_THOUSAND_SEPARATOR = True
 
@@ -321,10 +285,10 @@ INTERNAL_IPS = [
 # https://docs.djangoproject.com/en/5.2/ref/settings/#media-root
 
 
-if IS_PROD_ENV:
+if ENVIRONMENT == "production":
     MEDIA_ROOT = "/home/lesechos/media.lesechosdeslimbes.fr"
     MEDIA_URL = "http://media.lesechosdeslimbes.fr/"
-else:
+if ENVIRONMENT == "development":
     MEDIA_ROOT = str(BASE_DIR.parent / "media")
     MEDIA_URL = "media/"
 

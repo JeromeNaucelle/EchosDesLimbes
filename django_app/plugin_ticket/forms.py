@@ -16,6 +16,6 @@ class TicketPluginForm(EntangledModelForm):
              ]
         }
         # untangled_fields = ("tag_type",)  # Only if you use the tag_type field
-    background = ImageFormField()
+    background = ImageFormField(required=False)
     ticket = forms.ModelChoiceField(Ticket.objects.all())
-    text_color = forms.CharField(max_length=10)
+    text_color = forms.CharField(max_length=10, required=False)

@@ -1,6 +1,6 @@
 {% load sekizai_tags cms_tags %}
 
-<div class="card text-center h-100" style="background-image: url('{{background_img}}'); background-size: contain; color: {{text_color}};">
+<div class="card text-center h-100" style="{% if background_img %}background-image: url('{{background_img}}'); background-size: contain;{% endif %}{% if text_color %} color: {{text_color}};{% endif %}">
     <h2>{{ticket.opus.larp}}</h2>
     <h3>{{ticket.access_type}}</h3>
 

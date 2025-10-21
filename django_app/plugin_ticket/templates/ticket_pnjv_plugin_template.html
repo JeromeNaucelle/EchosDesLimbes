@@ -1,7 +1,7 @@
 {% load sekizai_tags cms_tags %}
 
 
-<div class="card text-center h-100 d-flex flex-column" style="background-image: url('{{background_img}}'); background-size: contain; color: {{text_color}};">
+<div class="card text-center h-100 d-flex flex-column" style="{% if background_img %}background-image: url('{{background_img}}'); background-size: contain;{% endif %} color: {{text_color}};">
     <div class="flex-grow-1 d-flex flex-column justify-content-center">
         <h2>{{ticket.opus.larp}}</h2>
         <h3>{{ticket.access_type}}</h3>

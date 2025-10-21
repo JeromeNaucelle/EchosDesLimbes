@@ -89,41 +89,90 @@ def orga_gn_list(request: HttpRequest):
                 context)
 
 
+def orga_gn_pnjv(request: HttpRequest, last_opus, larp, factions):
+    pnjv_user_ids = Inscription.objects.filter(opus=last_opus, access_type='PNJV').values_list('user_id', flat=True)
+    pnjv_list = list(PnjInfos.objects.filter(larp=larp, user_id__in=pnjv_user_ids).select_related('user').order_by('user__last_name', 'user__first_name'))
+
+    context = {
+        'larp': larp,
+        'opus': last_opus,
+        'pnjv_list': pnjv_list,
+        'factions': factions,
+        'selected_faction': 'PNJV',
+    }
+
+    return render(request, 'larp/orga_gn.html', context)
+
 @login_required
 def orga_gn(request: HttpRequest, larp_id):
-    @dataclass
-    class UserSheets:
-        user: User
-        access_type: str
-        pnj_info: None|PnjInfos = None
-        pj_infos: None|QuerySet|list[PjInfos] = None
-
-    def list_sheets(larp, inscriptions: QuerySet|list[Inscription]):
-        sheets = []
-        pj_infos = PjInfos.objects.filter(larp=larp)
-        pnj_infos = PnjInfos.objects.filter(larp=larp)
-        for inscription in inscriptions:
-            sheet = UserSheets(user=inscription.user,access_type=inscription.access_type)
-            if 'PNJ' in inscription.access_type:
-                sheet.pnj_info = pnj_infos.get(user=inscription.user)
-            
-            if inscription.access_type in ['PJ', 'PNJF']:
-                sheet.pj_infos = pj_infos.filter(user=inscription.user)
-            sheets.append(sheet)
-        return sheets
-
+    from .models import Faction  # local import to avoid circulars in headings
     larp = Larp.objects.get(pk=larp_id)
     has_orga_permission(request.user, larp)
     last_opus = Opus.objects.filter(larp_id=larp_id).latest('created_at')
-    inscriptions = Inscription.objects.filter(opus=last_opus)
-    user_sheets = list_sheets(larp, inscriptions)
+    factions = Faction.objects.filter(larp=larp).order_by('name')
+
+    # Get selected faction from query parameters
+    selected_faction_id = request.GET.get('faction')
+    selected_faction = None
+    if selected_faction_id:
+        if selected_faction_id == 'PNJV':
+            return orga_gn_pnjv(request, last_opus, larp, factions)
+        else:
+            try:
+                selected_faction = Faction.objects.get(pk=selected_faction_id, larp=larp)
+            except Faction.DoesNotExist:
+                selected_faction = None
+
+        
+    factions_to_process = factions if selected_faction is None else [selected_faction]
+    
+    # Get all inscriptions for the latest opus
+    inscriptions = Inscription.objects.filter(opus=last_opus).select_related('user', 'faction')
+    
+    # Create faction data with both PJ and PNJF lists
+    faction_data = []
+    
+    for faction in factions_to_process:
+        # Pure PJ users (access_type = 'PJ')
+        pj_users = inscriptions.filter(faction=faction, access_type='PJ').values_list('user_id', flat=True)
+        pj_list = list(PjInfos.objects.filter(larp=larp, faction=faction, user_id__in=pj_users).order_by('name'))
+        
+        # PNJF users (access_type = 'PNJF') - have both PJ and PNJ sheets
+        pnjf_users = inscriptions.filter(faction=faction, access_type='PNJF').values_list('user_id', flat=True)
+        pnjf_list = []
+        for user_id in pnjf_users:
+            try:
+                pj_infos = PjInfos.objects.get(larp=larp, faction=faction, user_id=user_id)
+                pnj_infos = PnjInfos.objects.get(larp=larp, user_id=user_id)
+                pnjf_list.append({
+                    'user': pj_infos.user,
+                    'pj_infos': pj_infos,
+                    'pnj_infos': pnj_infos
+                })
+            except (PjInfos.DoesNotExist, PnjInfos.DoesNotExist):
+                # Skip if either sheet is missing
+                continue
+        
+        faction_data.append({
+            'faction': faction,
+            'pj_list': pj_list,
+            'pnjf_list': pnjf_list
+        })
+
+    # PNJV: PNJ volant have no faction; take users with PNJV inscription on latest opus
+    pnjv_user_ids = Inscription.objects.filter(opus=last_opus, access_type='PNJV').values_list('user_id', flat=True)
+    pnjv_list = list(PnjInfos.objects.filter(larp=larp, user_id__in=pnjv_user_ids).select_related('user').order_by('user__last_name', 'user__first_name'))
+
     context = {
+        'larp': larp,
         'opus': last_opus,
-        'sheets': user_sheets
+        'faction_data': faction_data,
+        'pnjv_list': pnjv_list,
+        'factions': factions,
+        'selected_faction': selected_faction,
     }
 
-    return render(request, 'larp/orga_gn.html', 
-                context)
+    return render(request, 'larp/orga_gn.html', context)
 
 
 @login_required

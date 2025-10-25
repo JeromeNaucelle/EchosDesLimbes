@@ -94,7 +94,8 @@ INSTALLED_APPS = [
     'payments',
     'plugin_ticket',
     'plugin_background_menu',
-    "django_htmx",
+    'django_htmx',
+    'template_partials'
 ]
 
 MIDDLEWARE = [

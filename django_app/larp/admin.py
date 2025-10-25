@@ -9,6 +9,7 @@ admin.site.register(models.Ticket)
 admin.site.register(models.Inscription)
 admin.site.register(models.Trigger)
 admin.site.register(models.Profile)
+admin.site.register(models.PjInfos)
 
 class OpusAdmin(admin.ModelAdmin):
     exclude=('pj_form', 'pnj_form', )

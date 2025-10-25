@@ -1,25 +1,23 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.http.request import HttpRequest
 from django.contrib.auth.models import User, Group
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 from django.http import HttpResponse
-from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.units import inch
 from reportlab.lib import colors
 from io import BytesIO
+from django.db import transaction
 
-from .models import Profile, Inscription, PnjInfos,PjInfos, Larp, Opus, BgStep, BgChoice, Character_Bg_choices
-from .forms import PnjInfosForm, PjInfosForm, BgAnswerForm
-from larp.forms import ProfileForm
+from .models import Profile, Inscription, PnjInfos,PjInfos, Larp, Opus, BgStep, BgChoice, Character_Bg_choices, Faction
+from larp.forms import ProfileForm, PnjInfosForm, PjInfosForm, BgAnswerForm, BgStepForm, BgChoiceForm
 from larp.utils import has_orga_permission
 from dataclasses import dataclass
-from django.db.models import QuerySet
 
     
 @login_required
@@ -85,7 +83,7 @@ def orga_gn_list(request: HttpRequest):
         'larps': user_orga_larps
     }
 
-    return render(request, 'larp/orga_gn_list.html', 
+    return render(request, 'larp/orga/orga_gn_list.html', 
                 context)
 
 
@@ -101,7 +99,7 @@ def orga_gn_pnjv(request: HttpRequest, last_opus, larp, factions):
         'selected_faction': 'PNJV',
     }
 
-    return render(request, 'larp/orga_gn.html', context)
+    return render(request, 'larp/orga/orga_gn.html', context)
 
 @login_required
 def orga_gn(request: HttpRequest, larp_id):
@@ -172,7 +170,7 @@ def orga_gn(request: HttpRequest, larp_id):
         'selected_faction': selected_faction,
     }
 
-    return render(request, 'larp/orga_gn.html', context)
+    return render(request, 'larp/orga/orga_gn.html', context)
 
 
 @login_required
@@ -210,11 +208,103 @@ def my_inscriptions(request: HttpRequest):
                 "larps": larps,
                 'inscriptions': inscriptions})
 
+@login_required
+def bg_choice_requisit(request: HttpRequest, bg_choice_id: int):
+    bg_choice = get_object_or_404(BgChoice.objects.select_related('bg_step__faction__larp'), pk=bg_choice_id)
+    has_orga_permission(request.user, bg_choice.bg_step.faction.larp)
+    bg_steps = BgStep.objects.filter(faction=bg_choice.bg_step.faction, step__lt=bg_choice.bg_step.step)
+
+
+    template_name = "larp/orga/bg_choice_requisit.html"
+    if request.htmx:
+        template_name += "#choice-list"
+
+    return render(request, 'larp/orga/bg_choice_requisit.html', 
+            {
+                "bg_choice": bg_choice,
+                "bg_steps": bg_steps,
+            })
+
+@login_required
+def bg_choices(request: HttpRequest, bg_step_id: int):
+    bg_step = get_object_or_404(BgStep.objects.select_related('faction__larp'), pk=bg_step_id)
+    has_orga_permission(request.user, bg_step.faction.larp)
+    bg_choices = BgChoice.objects.filter(bg_step=bg_step)
+
+    if request.method == 'GET':
+        form = BgChoiceForm()
+
+    if request.method == 'POST':
+        form = BgChoiceForm(request.POST)
+        if form.is_valid():
+            choice = form.save(commit=False)
+            choice.bg_step = bg_step
+            choice.save()
+
+    return render(request, 'larp/orga/bg_choices.html', 
+            {
+                "bg_step": bg_step,
+                "form": form,
+                "bg_choices": bg_choices,
+            })
+
+
+@transaction.atomic
+def bg_step_change_nb(request: HttpRequest, faction_id: int):
+    faction = get_object_or_404(Faction.objects.select_related('larp'), pk=faction_id)
+    has_orga_permission(request.user, faction.larp)
+    faction_steps = BgStep.objects.filter(faction_id=faction_id)
+    action = request.GET.get('action', None)
+    bg_step_id = request.GET.get('step_id', None)
+    bg_step = faction_steps.get(pk=bg_step_id)
+
+    if action == 'up':
+        previous_step = faction_steps.get(step=bg_step.step-1)
+        previous_step.step = previous_step.step + 1
+        previous_step.save()
+        bg_step.step = bg_step.step - 1
+    if action == 'down':
+        next_step = faction_steps.get(step=bg_step.step+1)
+        next_step.step = next_step.step - 1
+        next_step.save()
+        bg_step.step = bg_step.step + 1
+
+    bg_step.save()
+
+    return redirect(reverse('larp:bg_steps', kwargs={'faction_id': faction_id}))
+
+@login_required
+def bg_steps(request: HttpRequest, faction_id: int):
+    faction = get_object_or_404(Faction.objects.select_related('larp'), pk=faction_id)
+    has_orga_permission(request.user, faction.larp)
+
+    if request.method == 'GET':
+        form = BgStepForm()
+
+    if request.method == 'POST':
+        current_step_nb = BgStep.objects.filter(faction=faction).count()
+        form = BgStepForm(request.POST)
+        if form.is_valid():
+            step = form.save(commit=False)
+            step.faction = faction
+            step.step = current_step_nb + 1
+            step.save()
+
+    current_steps = BgStep.objects.filter(faction=faction).order_by('step')
+    return render(request, 'larp/orga/bg_steps.html', 
+            {
+                "form": form,
+                "faction": faction,
+                "current_steps": current_steps,
+            })
+
 
 @login_required
 def profile(request: HttpRequest):
     # TODO: check que request.user.pk == user_pk ou que request.user est orga
     user_pk = request.GET.get('user_id', request.user.pk)
+
+    
 
     requested_user = User.objects.get(pk=user_pk)
     context = {
@@ -250,7 +340,6 @@ def profile(request: HttpRequest):
 def character_list(request: HttpRequest):
     from larp.utils import only_last_inscriptions
     #TODO : si les infos de profil (sécurité) ne sont pas remplies, redirection
-    #TODO : test si on récupère bien seulement les dernières inscriptions par GN
 
     context = {
         'can_add_character': False

@@ -117,3 +117,32 @@ class BgAnswerForm(forms.Form):
         super().__init__(*args, **kwargs)
         # Display the choice text for the radio options
         self.fields['choice'].choices = [(str(c.pk), c.text or c.short_name) for c in choices_qs]
+
+
+class BgStepForm(forms.ModelForm):
+    class Meta:
+        model = larp_models.BgStep
+        fields = ['short_name', 'question']
+
+
+class BgChoiceForm(forms.ModelForm):
+    text = forms.CharField(required=False, widget=forms.Textarea, label="Description du choix")
+    class Meta:
+        model = larp_models.BgChoice
+        fields = ['short_name', "empty", 'text']
+        labels = {
+            'empty': "Text libre du joueur",
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        empty = cleaned_data.get("empty")
+        text = cleaned_data.get("text")
+        if not empty:
+            if not text:
+                msg = "Le champs 'Description' est nécessaire si on n'est pas sur un texte libre du joueur"
+                self.add_error("text", msg)
+        else:
+            cleaned_data['text'] = "Description libre du joueur"
+
+

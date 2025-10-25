@@ -1,0 +1,50 @@
+{% extends CMS_TEMPLATE %}
+{% load sekizai_tags django_bootstrap5 partials %}
+
+{% block page_head %}
+{% endblock %}
+
+{% block cms_content %}
+        <h2 class="mb-5">{{bg_choice.short_name}}</h2>
+        <h3>{{bg_choice.text}}</h3>
+
+        <p>
+            <b>Ce choix dépend de l'étape :</b>
+            <ul style="list-style: none;">
+                {% for bg_step in bg_steps %}
+                <li>
+                    <label>
+                        <input type="radio" value="{{ bg_step.pk }}" name="step_id"/>
+                        {{ bg_step.short_name }}
+                    </label>
+                </li>
+                {% endfor %}
+            </ul>
+        </p>
+        <p>
+            <b>Choix en pré-requis :</b>
+            {% partialdef choice-list %}
+            <ul style="list-style: none;">
+                {% for choice in choices %}
+                <li>
+                    <label>
+                        <input type="radio" value="{{ choice.pk }}" name="choice_id" hx-trigger="click"/>
+                        {{ choice.short_name }}
+                    </label>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endpartialdef %}
+        </p>
+
+        <script>
+            var rad = document.getElementsByName("step_id")
+            for (var i = 0; i < rad.length; i++) {
+                rad[i].addEventListener('change', function() {
+                    if (this.checked) {
+                        console.log(this.value)
+                    }
+                });
+            }
+        </script>
+{% endblock %}

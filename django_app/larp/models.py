@@ -188,7 +188,10 @@ class BgStep(models.Model):
         verbose_name = "Question background"
         verbose_name_plural = "Questions de background"
         constraints = [
-            models.UniqueConstraint(fields=["step", "faction"], name="unique_bg_step_per_faction"),
+            models.UniqueConstraint(
+                fields=["step", "faction"], 
+                name="unique_bg_step_per_faction",
+                deferrable=models.Deferrable.DEFERRED),
         ]
 
     step = models.IntegerField(default=0, validators=step_validators())

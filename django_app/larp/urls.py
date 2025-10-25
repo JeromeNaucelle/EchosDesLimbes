@@ -33,6 +33,11 @@ urlpatterns = [
     path('view_pj/<int:pjinfos_id>', views.view_pj, name='view_pj'),
     path('view_pj/<int:pjinfos_id>/pdf', views.view_pj_pdf, name='view_pj_pdf'),
     path('complete_bg/<int:pjinfo_id>', views.complete_bg, name='complete_bg'),
+    # Vues orga
+    path('bg_steps/<int:faction_id>', views.bg_steps, name='bg_steps'),
+    path('bg_step_change_nb/<int:faction_id>', views.bg_step_change_nb, name='bg_step_change_nb'),
+    path('bg_choices/<int:bg_step_id>', views.bg_choices, name='bg_choices'),
+    path('bg_choice_requisit/<int:bg_choice_id>', views.bg_choice_requisit, name='bg_choice_requisit'),
     path('orga_gn_list', views.orga_gn_list, name='orga_gn_list'),
     path('orga_gn/<int:larp_id>', views.orga_gn, name='orga_gn')
 ]

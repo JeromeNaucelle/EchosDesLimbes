@@ -27,7 +27,15 @@
 {% endblock %}
 
 {% block cms_content %}
-        <h2 class="mb-5">Orga : {{ larp }} — {{ opus }}</h2>
+        <div class="card mb-3">
+            <div class="card-header">
+                <h2>Vue Orga</h2>
+            </div>
+            <div class="card-body">
+                <h4>GN : {{larp}}</h4>
+                <h4>Opus : {{opus}}</h4>
+            </div>
+        </div>
 
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">

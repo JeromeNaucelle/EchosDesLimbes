@@ -124,6 +124,20 @@ class BgStepForm(forms.ModelForm):
         model = larp_models.BgStep
         fields = ['short_name', 'question']
 
+    def __init__(self, *args, **kwargs):
+        action = kwargs.pop('action')
+        super().__init__(*args, **kwargs)
+        self.fields['action'] = forms.CharField(max_length=15, 
+                                    widget=forms.HiddenInput(attrs={
+                                        'value': action
+                                    }))
+        if action == 'edit-step':
+            self.fields['step_id'] = forms.IntegerField(min_value=0, 
+                                    widget=forms.HiddenInput(attrs={
+                                        'value': self.instance.pk
+                                    }))
+            self.fields['short_name'].widget.attrs['autofocus'] = True
+
 
 class BgChoiceForm(forms.ModelForm):
     text = forms.CharField(required=False, widget=forms.Textarea, label="Description du choix")

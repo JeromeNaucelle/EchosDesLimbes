@@ -27,7 +27,14 @@
 {% endblock %}
 
 {% block cms_content %}
-        <h2 class="mb-5">Mes GNs en tant qu'Orga</h2>
+        <div class="card mb-3">
+            <div class="card-header">
+                <h2>Vue Orga</h2>
+            </div>
+            <div class="card-body">
+                <h4>Mes GNs</h4>
+            </div>
+        </div>
     
         {% if larps.count == 0 %}
         <h4 class="mb-5">Il semble que vous ne soyez pas Orga actuellement</h4>

@@ -27,10 +27,18 @@
 {% endblock %}
 
 {% block cms_content %}
-        <h2 class="mb-5">{{bg_step.short_name}}</h2>
-        <h3 class="mb-5">{{bg_step.question}}</h3>
-    
+        <div class="card mb-3">
+            <div class="card-header">
+                <h2>Gestions des choix de BG</h2>
+            </div>
+            <div class="card-body">
+                <h4>{{ bg_step.faction.larp.factions_name }} : {{ bg_step.faction }}</h4>
+                <h4>Étape : {{bg_step.short_name}}</h4>
+                <h4>Question : {{bg_step.question}}</h4>
+            </div>
+        </div>
         
+        <h4 class="mb-1">Options proposées au joueur</h4>
         <table class="w-100 table">
             <thead>
                 <tr>

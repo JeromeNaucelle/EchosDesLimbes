@@ -302,22 +302,50 @@ def bg_step_change_nb(request: HttpRequest, faction_id: int):
 def bg_steps(request: HttpRequest, faction_id: int):
     faction = get_object_or_404(Faction.objects.select_related('larp'), pk=faction_id)
     has_orga_permission(request.user, faction.larp)
+    template = 'larp/orga/bg_steps.html'
+    action = 'add-step'
 
-    if request.method == 'GET':
-        form = BgStepForm()
+    if request.htmx:
+        if request.method == 'POST':
+            template += '#step-form'
+            action = 'edit-step'
+            current_step = BgStep.objects.get(pk=request.POST['step_id'])
+            form = BgStepForm(action=action, instance=current_step)
+        if request.method == 'DELETE':
+            current_step = BgStep.objects.get(pk=request.GET['step_id'])
+            current_step.delete()
+            return HttpResponseClientRedirect(reverse('larp:bg_steps', kwargs={'faction_id': faction_id}))
 
-    if request.method == 'POST':
-        current_step_nb = BgStep.objects.filter(faction=faction).count()
-        form = BgStepForm(request.POST)
-        if form.is_valid():
-            step = form.save(commit=False)
-            step.faction = faction
-            step.step = current_step_nb + 1
-            step.save()
+
+    else:
+        if request.method == 'GET':
+            form = BgStepForm(action=action)
+
+        if request.method == 'POST':
+            if request.POST['action'] == 'edit-step':
+                current_step = BgStep.objects.get(pk=request.POST['step_id'])
+                form = BgStepForm(request.POST, action=action, instance=current_step)
+                if form.is_valid():
+                    form.save()
+                # On retourne un formulaire vide s'il est valide
+                    form = BgStepForm(action='add-step')
+
+
+            else:
+                current_step_nb = BgStep.objects.filter(faction=faction).count()
+                form = BgStepForm(request.POST, action=action)
+                if form.is_valid():
+                    step = form.save(commit=False)
+                    step.faction = faction
+                    step.step = current_step_nb + 1
+                    step.save()
+                    # On retourne un formulaire vide s'il est valide
+                    form = BgStepForm(action='add-step')
 
     current_steps = BgStep.objects.filter(faction=faction).order_by('step')
-    return render(request, 'larp/orga/bg_steps.html', 
+    return render(request, template,
             {
+                "action": action,
                 "form": form,
                 "faction": faction,
                 "current_steps": current_steps,

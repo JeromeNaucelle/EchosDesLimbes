@@ -1,9 +1,14 @@
 {% extends CMS_TEMPLATE %}
-{% load sekizai_tags django_bootstrap5 %}
+{% load sekizai_tags django_bootstrap5 partials django_htmx %}
 
 {% block title %}BG : Gestion des étapes{% endblock %}
 
+{% block body_attrs %}
+hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
+{% endblock %}
+
 {% block page_head %}
+{% htmx_script %}
     {% addtoblock "css" %}
         <style>
 
@@ -19,6 +24,13 @@
                 border: none;
             }
 
+        .fade-me-in {
+            opacity: 100;
+            transition: opacity 2s ease-in;
+        }
+        .fade-me-in-origin {
+            opacity: 0;
+        }
         
             
 
@@ -27,15 +39,24 @@
 {% endblock %}
 
 {% block cms_content %}
-        <h2 class="mb-5">Question de BG ({{faction}})</h2>
+        <div class="card p-2 mb-3">
+            <div class="card-header">
+                <h2>Gestion des étapes de BG</h2>
+            </div>
+            <div class="card-body">
+                <h4>GN : {{faction.larp}}</h4>
+                <h4>{{ faction.larp.factions_name }} : {{ faction }}</h4>
+            </div>
+        </div>
     
-        
+
         <table class="w-100 table">
             <thead>
                 <tr>
                     <td colspan="2">Étape</td>
                     <td>Nom d'étape</td>
                     <td>Question</td>
+                    <td>Actions</td>
                 </tr>
             </thead>
             <tbody>
@@ -52,6 +73,17 @@
                         <td>{{step.step}}</td>
                         <td>{{step.short_name}}</td>
                         <td><a href="{% url 'larp:bg_choices' step.pk %}">{{step.question}}</a></td>
+                        <td style="width: 15%;">
+                            <input type="hidden" name="action" value="edit-step"/>
+                            <input type="hidden" name="step_id" value="{{ step.pk }}"/>
+                            <button type="submit" class="btn btn-primary" value="" 
+                                hx-include="previous [name='step_id'], previous [name='action']"
+                                hx-target="#step-form" hx-post="" hx-swap="outerHTML"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button class="btn btn-danger"  hx-delete="" hx-include="previous [name='step_id']"
+                                        hx-confirm="Êtes-vous sûr(e) de vouloir supprimer cette étape ? Toutes les options associées (proposition au joueur) seront également supprimées !">
+                                        <i class="fa-solid fa-square-xmark"></i>
+                            </button>
+                        </td>
                     </tr>
 
                 {% empty %}
@@ -61,15 +93,33 @@
                 {% endfor %}
             </tbody>
         </table>
-        <p>
+
+        {% partialdef step-form inline %}
+        <div id="step-form" class="fade-me-in{% if action != 'edit-step' %}-origin{% endif %}">
+            {% if action == 'edit-step' %}
+            <hr>
+            <h3>Modifier une étape :</h3>
+            <form method="post">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <div style="text-align: center;">
+                    {% bootstrap_button button_type="submit" content="Valider" extra_classes="submit_btn" %}
+                </div>
+            </form>
+            <hr>
+            {% endif %}
+        </div>
+        {% endpartialdef %}
+
+        <div>
             <h3>Ajouter une étape :</h3>
-                <form action="{{ url_validation }}" method="post">
-                    {% csrf_token %}
-                    {% bootstrap_form form %}
-                    <div style="text-align: center;">
-                        {% bootstrap_button button_type="submit" content="Valider" extra_classes="submit_btn" %}
-                    </div>
-                </form>
-        </p>
+            <form method="post">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <div style="text-align: center;">
+                    {% bootstrap_button button_type="submit" content="Valider" extra_classes="submit_btn" %}
+                </div>
+            </form>
+        </div>
 
 {% endblock %}

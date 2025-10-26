@@ -31,6 +31,13 @@
     
         
         <table class="w-100 table">
+            <thead>
+                <tr>
+                    <td colspan="2">Étape</td>
+                    <td>Nom d'étape</td>
+                    <td>Question</td>
+                </tr>
+            </thead>
             <tbody>
                 {% for step in current_steps %}
                     <tr class="">
@@ -49,7 +56,7 @@
 
                 {% empty %}
                 <tr>
-                    <td>Ajoutez votre première étape de background, pour l'instant c'est vide</td>
+                    <td colspan="4">Ajoutez votre première étape de background, pour l'instant c'est vide</td>
                 </tr>
                 {% endfor %}
             </tbody>

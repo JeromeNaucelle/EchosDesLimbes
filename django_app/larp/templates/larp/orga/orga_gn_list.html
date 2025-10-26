@@ -1,6 +1,8 @@
 {% extends CMS_TEMPLATE %}
 {% load sekizai_tags %}
 
+{% block title %}Orga : mes GN{% endblock %}
+
 {% block page_head %}
     {% addtoblock "css" %}
         <style>
@@ -39,11 +41,11 @@
                 </tr>
             </thead>
             <tbody>
+                {% for larp in larps %}
                     <tr class="">
-                    {% for larp in larps %}
                     <td><a href="{% url 'larp:orga_gn' larp_id=larp.pk%}"><div class="w-100">{{larp}}</div></a></td>
-                    {% endfor %}
-                    </tr>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
         {% endif %}

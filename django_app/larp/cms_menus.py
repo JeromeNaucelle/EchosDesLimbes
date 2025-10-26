@@ -18,12 +18,6 @@ class LarpMenu(CMSAttachMenu):
         This method is used to build the menu tree.
         """
         nodes = []
-        node = NavigationNode(
-                title='Mes Gns',
-                url=reverse("larp:my_inscriptions"),
-                id=1,  # unique id for this node within the menu
-            )
-        nodes.append(node)
 
         node = NavigationNode(
                 title='Mon profil',

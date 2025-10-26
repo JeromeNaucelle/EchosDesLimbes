@@ -1,6 +1,8 @@
 {% extends CMS_TEMPLATE %}
 {% load sekizai_tags %}
 
+{% block title %}Orga : {{ larp }} — {{ opus }}{% endblock %}
+
 {% block page_head %}
     {% addtoblock "css" %}
         <style>
@@ -17,7 +19,7 @@
                 border: none;
             }
 
-        
+
             
 
         </style>
@@ -26,114 +28,139 @@
 
 {% block cms_content %}
         <h2 class="mb-5">Orga : {{ larp }} — {{ opus }}</h2>
-        
-        <!-- Faction Filter -->
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <form method="get" class="d-flex align-items-center">
-                    <label for="faction" class="form-label me-3 mb-0">Filtrer par faction :</label>
-                    <select name="faction" id="faction" class="form-select me-3" style="max-width: 200px;">
-                        <option value="">Toutes les factions</option>
-                        {% for faction in factions %}
-                        <option value="{{ faction.pk }}" {% if selected_faction and selected_faction.pk == faction.pk %}selected{% endif %}>
-                            {{ faction.name }}
-                        </option>
+
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Fiches perso</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Étapes de BG</button>
+            </li>
+          </ul>
+          <div class="tab-content" id="myTabContent">
+            <!-- Tab de gestion des fiches perso -->
+            <div class="tab-pane fade show active mt-2" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                <!-- Faction Filter -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <form method="get" class="d-flex align-items-center">
+                            <label for="faction" class="form-label me-3 mb-0">Filtrer par faction :</label>
+                            <select name="faction" id="faction" class="form-select me-3" style="max-width: 200px;">
+                                <option value="">Toutes les factions</option>
+                                {% for faction in factions %}
+                                <option value="{{ faction.pk }}" {% if selected_faction and selected_faction.pk == faction.pk %}selected{% endif %}>
+                                    {{ faction.name }}
+                                </option>
+                                {% endfor %}
+                                <option value="PNJV" {% if selected_faction and selected_faction == 'PNJV' %}selected{% endif %}>
+                                    PNJV
+                                </option>
+                            </select>
+                            <button type="submit" class="btn btn-primary">Filtrer</button>
+                        </form>
+                    </div>
+                </div>
+
+                {% for faction_info in faction_data %}
+                <h3 class="mt-4">{{ faction_info.faction.name }}</h3>
+
+                <!-- PJ Users Table -->
+                <h4 class="mt-3">PJ (Personnages Joueurs)</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Personnage</th>
+                            <th>Joueur</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pj in faction_info.pj_list %}
+                        <tr>
+                            <td>{{ pj.name }}</td>
+                            <td>{{ pj.user.get_full_name }} ({{ pj.user.username }})</td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj' pj.pk %}">Voir</a>
+                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj_pdf' pj.pk %}">PDF</a>
+                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:edit_pj' pj.pk %}">Éditer</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="3">Aucun PJ dans cette faction.</td></tr>
                         {% endfor %}
-                        <option value="PNJV" {% if selected_faction and selected_faction == 'PNJV' %}selected{% endif %}>
-                            PNJV
-                        </option>
-                    </select>
-                    <button type="submit" class="btn btn-primary">Filtrer</button>
-                </form>
+                    </tbody>
+                </table>
+
+                <!-- PNJF Users Table -->
+                <h4 class="mt-3">PNJF (PNJ de Faction)</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Personnage</th>
+                            <th>Joueur</th>
+                            <th>Actions PJ</th>
+                            <th>Actions PNJ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pnjf in faction_info.pnjf_list %}
+                        <tr>
+                            <td>{{ pnjf.pj_infos.name }}</td>
+                            <td>{{ pnjf.user.get_full_name }} ({{ pnjf.user.username }})</td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj' pnjf.pj_infos.pk %}">Voir PJ</a>
+                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj_pdf' pnjf.pj_infos.pk %}">PDF PJ</a>
+                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:edit_pj' pnjf.pj_infos.pk %}">Éditer PJ</a>
+                            </td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pnj' pnjf.pnj_infos.pk %}">Voir PNJ</a>
+                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pnj_pdf' pnjf.pnj_infos.pk %}">PDF PNJ</a>
+                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:pnj_form' pnjf.pnj_infos.pk %}">Éditer PNJ</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4">Aucun PNJF dans cette faction.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endfor %}
+
+                {% if not selected_faction or selected_faction == 'PNJV' %}
+                <h3 class="mt-5">PNJV (sans faction)</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Joueur</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pnj in pnjv_list %}
+                        <tr>
+                            <td>{{ pnj.user.get_full_name }} ({{ pnj.user.username }})</td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:pnj_form' pnj.pk %}">Voir/Éditer</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="2">Aucun PNJV.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
             </div>
-        </div>
 
-        {% for faction_info in faction_data %}
-        <h3 class="mt-4">{{ faction_info.faction.name }}</h3>
-        
-        <!-- PJ Users Table -->
-        <h4 class="mt-3">PJ (Personnages Joueurs)</h4>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Personnage</th>
-                    <th>Joueur</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for pj in faction_info.pj_list %}
-                <tr>
-                    <td>{{ pj.name }}</td>
-                    <td>{{ pj.user.get_full_name }} ({{ pj.user.username }})</td>
-                    <td>
-                        <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj' pj.pk %}">Voir</a>
-                        <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj_pdf' pj.pk %}">PDF</a>
-                        <a class="btn btn-sm btn-outline-light" href="{% url 'larp:edit_pj' pj.pk %}">Éditer</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="3">Aucun PJ dans cette faction.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        
-        <!-- PNJF Users Table -->
-        <h4 class="mt-3">PNJF (PNJ de Faction)</h4>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Personnage</th>
-                    <th>Joueur</th>
-                    <th>Actions PJ</th>
-                    <th>Actions PNJ</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for pnjf in faction_info.pnjf_list %}
-                <tr>
-                    <td>{{ pnjf.pj_infos.name }}</td>
-                    <td>{{ pnjf.user.get_full_name }} ({{ pnjf.user.username }})</td>
-                    <td>
-                        <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj' pnjf.pj_infos.pk %}">Voir PJ</a>
-                        <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj_pdf' pnjf.pj_infos.pk %}">PDF PJ</a>
-                        <a class="btn btn-sm btn-outline-light" href="{% url 'larp:edit_pj' pnjf.pj_infos.pk %}">Éditer PJ</a>
-                    </td>
-                    <td>
-                        <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pnj' pnjf.pnj_infos.pk %}">Voir PNJ</a>
-                        <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pnj_pdf' pnjf.pnj_infos.pk %}">PDF PNJ</a>
-                        <a class="btn btn-sm btn-outline-light" href="{% url 'larp:pnj_form' pnjf.pnj_infos.pk %}">Éditer PNJ</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="4">Aucun PNJF dans cette faction.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% endfor %}
-
-        {% if not selected_faction or selected_faction == 'PNJV' %}
-        <h3 class="mt-5">PNJV (sans faction)</h3>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Joueur</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for pnj in pnjv_list %}
-                <tr>
-                    <td>{{ pnj.user.get_full_name }} ({{ pnj.user.username }})</td>
-                    <td>
-                        <a class="btn btn-sm btn-outline-light" href="{% url 'larp:pnj_form' pnj.pk %}">Voir/Éditer</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="2">Aucun PNJV.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% endif %}
+            <!-- Tab de gestion des background -->
+            <div class="tab-pane fade mt-2" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                <h4>Gérer les étapes et options de background pour le/la {{ larp.factions_name }}</h4>
+                <p>
+                    <ul>
+                        {% for faction in factions %}
+                        <li><a href="{% url 'larp:bg_steps' faction.pk %}">{{ faction }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            </div>
+          </div>
 
 {% endblock %}

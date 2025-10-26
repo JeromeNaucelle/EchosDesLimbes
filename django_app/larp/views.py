@@ -78,8 +78,11 @@ def create_pj(request: HttpRequest, inscription_id):
 
 @login_required
 def orga_gn_list(request: HttpRequest):
-    user_groups_id = request.user.groups.all().values_list('pk')
-    user_orga_larps = Larp.objects.filter(orga_group_id__in=user_groups_id)
+    if request.user.is_superuser:
+        user_orga_larps = Larp.objects.all()
+    else:
+        user_groups_id = request.user.groups.all().values_list('pk')
+        user_orga_larps = Larp.objects.filter(orga_group_id__in=user_groups_id)
     context = {
         'larps': user_orga_larps
     }
@@ -208,6 +211,7 @@ def my_inscriptions(request: HttpRequest):
             {
                 "larps": larps,
                 'inscriptions': inscriptions})
+
 
 @login_required
 def bg_choice_requisit(request: HttpRequest, bg_choice_id: int):

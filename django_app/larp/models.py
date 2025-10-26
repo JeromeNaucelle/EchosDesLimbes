@@ -198,6 +198,9 @@ class BgStep(models.Model):
     faction    = models.ForeignKey(Faction, on_delete=models.CASCADE)
     short_name = models.CharField(verbose_name="Nom (court)", max_length=20)
     question = models.TextField()
+
+    def __str__(self):
+        return self.short_name
     
 
 class BgChoice(models.Model):
@@ -213,6 +216,9 @@ class BgChoice(models.Model):
     text = models.TextField(default="", null=True)
     empty = models.BooleanField(default=False, verbose_name="A remplir par le joueur")
     requisit = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, verbose_name="Prérequis")
+
+    def __str__(self):
+        return self.short_name
 
 
 class Character_Bg_choices(models.Model):

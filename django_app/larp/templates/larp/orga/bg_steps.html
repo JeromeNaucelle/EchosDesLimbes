@@ -1,6 +1,8 @@
 {% extends CMS_TEMPLATE %}
 {% load sekizai_tags django_bootstrap5 %}
 
+{% block title %}BG : Gestion des étapes{% endblock %}
+
 {% block page_head %}
     {% addtoblock "css" %}
         <style>
@@ -44,6 +46,11 @@
                         <td>{{step.short_name}}</td>
                         <td><a href="{% url 'larp:bg_choices' step.pk %}">{{step.question}}</a></td>
                     </tr>
+
+                {% empty %}
+                <tr>
+                    <td>Ajoutez votre première étape de background, pour l'instant c'est vide</td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>

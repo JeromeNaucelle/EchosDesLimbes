@@ -13,6 +13,7 @@ from reportlab.lib.units import inch
 from reportlab.lib import colors
 from io import BytesIO
 from django.db import transaction
+from django_htmx.http import HttpResponseClientRedirect
 
 from .models import Profile, Inscription, PnjInfos,PjInfos, Larp, Opus, BgStep, BgChoice, Character_Bg_choices, Faction
 from larp.forms import ProfileForm, PnjInfosForm, PjInfosForm, BgAnswerForm, BgStepForm, BgChoiceForm
@@ -217,12 +218,32 @@ def bg_choice_requisit(request: HttpRequest, bg_choice_id: int):
 
     template_name = "larp/orga/bg_choice_requisit.html"
     if request.htmx:
-        template_name += "#choice-list"
+        if request.method == 'POST':
+            template_name += "#choice-list"
+            step_id = int(request.POST['step_id'])
+            choices = BgChoice.objects.filter(bg_step_id=step_id)
+        if request.method == 'DELETE':
+            bg_choice.requisit = None
+            bg_choice.save()
+            return HttpResponseClientRedirect(reverse('larp:bg_choices', kwargs={'bg_step_id': bg_choice.bg_step.pk}))
+    else:
+        if bg_choice.requisit:
+            choices = BgChoice.objects.filter(bg_step_id=bg_choice.requisit.bg_step_id)
+        else:
+            choices = []
 
-    return render(request, 'larp/orga/bg_choice_requisit.html', 
+        if request.method == 'POST':
+            choice_id = int(request.POST['choice_id'])
+            bg_choice.requisit_id = choice_id
+            bg_choice.save()
+            return redirect(reverse('larp:bg_choices', kwargs={'bg_step_id': bg_choice.bg_step.pk}))
+
+
+    return render(request, template_name, 
             {
                 "bg_choice": bg_choice,
                 "bg_steps": bg_steps,
+                "choices": choices
             })
 
 @login_required

@@ -1,9 +1,14 @@
 {% extends CMS_TEMPLATE %}
-{% load sekizai_tags django_bootstrap5 %}
+{% load sekizai_tags django_bootstrap5 partials django_htmx %}
 
 {% block title %}BG : Gestion des choix{% endblock %}
 
+{% block body_attrs %}
+hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
+{% endblock %}
+
 {% block page_head %}
+{% htmx_script %}
     {% addtoblock "css" %}
         <style>
 
@@ -19,7 +24,13 @@
                 border: none;
             }
 
-        
+        .fade-me-in {
+            opacity: 100;
+            transition: opacity 2s ease-in;
+        }
+        .fade-me-in-origin {
+            opacity: 0;
+        }
             
 
         </style>
@@ -50,13 +61,33 @@
             <tbody>
                 {% for choice in bg_choices %}
                     <tr>
-                        <td style="width: 20%;">{{choice.short_name}}</td>
-                        <td style="width: 60%;">{{choice.text}}</td>
+                        <td style="width: 20%;" class="align-middle">{{choice.short_name}}</td>
+                        <td style="width: 60%;" class="align-middle">
+                            <div class="d-flex w-100">
+                                <div class="me-1">
+                                    <input type="hidden" name="action" value="edit-choice"/>
+                                    <input type="hidden" name="choice_id" value="{{ choice.pk }}"/>
+                                    <button type="submit" class="btn btn-primary" value="" 
+                                        hx-include="previous [name='choice_id'], previous [name='action']"
+                                        hx-target="#choice-form" hx-post="" hx-swap="outerHTML"><i class="fa-solid fa-pen-to-square"></i></button>
+                                    <button class="btn btn-danger"  hx-delete="" hx-include="previous [name='choice_id']"
+                                                hx-confirm="Êtes-vous sûr(e) de vouloir supprimer cette option ? Si un joueur a sélectionné cette option, elle disparaitra de son BG.">
+                                                <i class="fa-solid fa-square-xmark"></i>
+                                    </button>
+                                </div>
+                                <div>
+                                    {{choice.text}}
+                                </div>
+                            </div>
+                        </td>
                         <td style="width: 20%;">
                             {% if choice.requisit %}
                             {{ choice.requisit }}<br>
+                            {% else %}
+                            (aucun actuellement)
                             {% endif %}
                             <a href="{% url 'larp:bg_choice_requisit' choice.pk %}"><input type="button" value="Gérer le pré-requis" class="w-100"/></a>
+
                         </td>
                     </tr>
                     {% empty %}
@@ -66,7 +97,24 @@
                 {% endfor %}
             </tbody>
         </table>
-        <p>
+        {% partialdef choice-form inline %}
+        <div id="choice-form" class="fade-me-in{% if action != 'edit-choice' %}-origin{% endif %}">
+            {% if action == 'edit-choice' %}
+            <hr>
+            <h3>Modifier une option :</h3>
+            <form method="post">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <div style="text-align: center;">
+                    {% bootstrap_button button_type="submit" content="Valider" extra_classes="submit_btn" %}
+                </div>
+            </form>
+            <hr>
+            {% endif %}
+        </div>
+        {% endpartialdef %}
+
+        <div>
             <h3>Ajouter une option :</h3>
                 <form action="{{ url_validation }}" method="post">
                     {% csrf_token %}
@@ -75,7 +123,7 @@
                         {% bootstrap_button button_type="submit" content="Valider" extra_classes="submit_btn" %}
                     </div>
                 </form>
-        </p>
+        </div>
 
         <script>
             let empty_btn = document.getElementById('id_empty')

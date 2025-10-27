@@ -255,23 +255,48 @@ def bg_choices(request: HttpRequest, bg_step_id: int):
     bg_step = get_object_or_404(BgStep.objects.select_related('faction__larp'), pk=bg_step_id)
     has_orga_permission(request.user, bg_step.faction.larp)
     bg_choices = BgChoice.objects.filter(bg_step=bg_step)
+    template = 'larp/orga/bg_choices.html'
+    action = 'add-choice'
 
-    if request.method == 'GET':
-        form = BgChoiceForm()
+    if request.htmx:
+        if request.method == 'POST':
+            template += '#choice-form'
+            action = 'edit-choice'
+            current_choice = BgChoice.objects.get(pk=request.POST['choice_id'])
+            form = BgChoiceForm(action=action, instance=current_choice)
+        if request.method == 'DELETE':
+            current_choice = BgChoice.objects.get(pk=request.GET['choice_id'])
+            current_choice.delete()
+            return HttpResponseClientRedirect(reverse('larp:bg_choices', kwargs={'bg_step_id': bg_step_id}))
 
-    if request.method == 'POST':
-        form = BgChoiceForm(request.POST)
-        if form.is_valid():
-            choice = form.save(commit=False)
-            choice.bg_step = bg_step
-            choice.save()
+    else:
+        if request.method == 'GET':
+            form = BgChoiceForm(action=action)
 
-    return render(request, 'larp/orga/bg_choices.html', 
+        if request.method == 'POST':
+            if request.POST['action'] == 'edit-choice':
+                current_choice = BgChoice.objects.get(pk=request.POST['choice_id'])
+                form = BgChoiceForm(request.POST, action=action, instance=current_choice)
+                if form.is_valid():
+                    form.save()
+                # On retourne un formulaire vide s'il est valide
+                    form = BgStepForm(action='add-choice')
+            else:
+                form = BgChoiceForm(request.POST, action=action)
+                if form.is_valid():
+                    choice = form.save(commit=False)
+                    choice.bg_step = bg_step
+                    choice.save()
+                    form = BgStepForm(action='add-choice')
+
+    return render(request, template, 
             {
+                "action": action,
                 "bg_step": bg_step,
                 "form": form,
                 "bg_choices": bg_choices,
             })
+
 
 
 @transaction.atomic

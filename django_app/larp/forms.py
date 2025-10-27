@@ -148,6 +148,20 @@ class BgChoiceForm(forms.ModelForm):
             'empty': "Text libre du joueur",
         }
 
+    def __init__(self, *args, **kwargs):
+        action = kwargs.pop('action')
+        super().__init__(*args, **kwargs)
+        self.fields['action'] = forms.CharField(max_length=15, 
+                                    widget=forms.HiddenInput(attrs={
+                                        'value': action
+                                    }))
+        if action == 'edit-choice':
+            self.fields['choice_id'] = forms.IntegerField(min_value=0, 
+                                    widget=forms.HiddenInput(attrs={
+                                        'value': self.instance.pk
+                                    }))
+            self.fields['short_name'].widget.attrs['autofocus'] = True
+
     def clean(self):
         cleaned_data = super().clean()
         empty = cleaned_data.get("empty")

@@ -15,6 +15,8 @@
             --limbes-purple: #6100c2;
             --bs-body-color: #f5f5f5;
             --bs-body-bg: #f5f5f55e;
+            --bs-secondary-bg: #e9ecef;
+            --grey-bg: #5a5b5c;
         }
         
         body {
@@ -30,6 +32,17 @@
 
         p {
           font-size: large;
+        }
+
+        .form-select:disabled {
+            color: white;
+            background-color: #e9ecef88;
+        }
+
+        .form-select {
+            --echos-select-bg-img: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/></svg>");
+            background-color: #1a1a1a;
+            background-image: var(--echos-select-bg-img), var(--bs-form-select-bg-icon, none);
         }
 
         a {

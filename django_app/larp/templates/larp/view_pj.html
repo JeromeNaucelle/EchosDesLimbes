@@ -34,7 +34,7 @@
                 </div>
                 <div class="card-body">
                     <p><strong>Compétences actuelles:</strong></p>
-                    <div class="border p-3 mb-3" style="background-color: #f8f9fa;">
+                    <div class="border p-3 mb-3" style="background-color: var(--grey-bg);">
                         {{ pj_infos.skills|linebreaks }}
                     </div>
                     
@@ -51,7 +51,7 @@
                     <h4 class="mb-0">Objectifs de jeu</h4>
                 </div>
                 <div class="card-body">
-                    <div class="border p-3" style="background-color: #f8f9fa;">
+                    <div class="border p-3" style="background-color: var(--grey-bg);">
                         {{ pj_infos.objectives|linebreaks }}
                     </div>
                 </div>
@@ -68,16 +68,16 @@
                     {% for bg_choice in bg_choices %}
                     <div class="mb-4">
                         <h5>Étape {{ bg_choice.step }}: {{ bg_choice.bgchoice.bg_step.short_name }}</h5>
-                        <p class="text-muted">{{ bg_choice.bgchoice.bg_step.question }}</p>
+                        <p>{{ bg_choice.bgchoice.bg_step.question }}</p>
                         
-                        <div class="border p-3 mb-2" style="background-color: #e9ecef;">
+                        <div class="border p-3 mb-2" style="background-color: var(--grey-bg);">
                             {% if bg_choice.bgchoice.text %}
                             <em>{{ bg_choice.bgchoice.text }}</em>
                             {% endif %}
                         </div>
                         
                         {% if bg_choice.player_text %}
-                        <div class="border p-3" style="background-color: #f8f9fa;">
+                        <div class="border p-3" style="background-color: var(--grey-bg);">
                             <strong>Commentaire du joueur:</strong><br>
                             {{ bg_choice.player_text|linebreaks }}
                         </div>

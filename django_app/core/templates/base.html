@@ -15,7 +15,7 @@
                 <ul class="navbar-nav mb-2 mb-lg-0 text-right me-5">
                     {% if request.user.is_authenticated %}
                     <li class="nav-item">
-                        <a href="{% url 'user_logout' %}" class="nav-link">{{ request.user }} <i class="fa-solid fa-user"></i></a>
+                        <a href="{% url 'larp:profile' %}" class="nav-link">{{ request.user }} <i class="fa-solid fa-user"></i></a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'user_logout' %}"><span>Logout <i class="fa-solid fa-right-to-bracket"></i></span></a>

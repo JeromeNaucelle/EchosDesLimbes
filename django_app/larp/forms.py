@@ -22,7 +22,7 @@ dans votre background et dans vos quêtes"""),
         model = larp_models.Profile
         exclude = ["user", "activated"]
         labels = {
-            "food": "Avez vous un régime alimentaire particulier, ou des allergies ?",
+            "food": "Avez vous un régime alimentaire particulier, des allergies ou tout autre problème de santé dont vous voulez avertir l'organisation ?",
 
             "xp_gn": "Quelle est votre expérience Gnistique ?",
 

@@ -1,5 +1,5 @@
 {% extends "bootstrap5/base.html" %}
-{% load static cms_tags menu_tags sekizai_tags %}
+{% load static cms_tags menu_tags sekizai_tags larp_menu %}
 
 
 {% block navbar %}
@@ -14,9 +14,7 @@
                 {% block searchbar %}{% endblock %}
                 <ul class="navbar-nav mb-2 mb-lg-0 text-right me-5">
                     {% if request.user.is_authenticated %}
-                    <li class="nav-item">
-                        <a href="{% url 'larp:profile' %}" class="nav-link">{{ request.user }} <i class="fa-solid fa-user"></i></a>
-                    </li>
+                    {% show_larp_menu 0 100 100 100 'larp/bootstrap5/larp_menu.html' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'user_logout' %}"><span>Logout <i class="fa-solid fa-right-to-bracket"></i></span></a>
                         

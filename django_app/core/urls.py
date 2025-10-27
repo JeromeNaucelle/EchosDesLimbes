@@ -34,6 +34,7 @@ urlpatterns = [
     path('accounts/', include('django_registration.backends.activation.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('payments/', include('payments.urls')),
+    path('larp/', include('larp.urls')),
     path('test', core_views.test, name='test'),
     path('', include('cms.urls')),
 ]

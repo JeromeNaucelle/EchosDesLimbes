@@ -12,58 +12,70 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
 {% endblock %}
 
 {% block cms_content %}
-        <h2 class="mb-5">{{bg_choice.short_name}}</h2>
-        <h3>{{bg_choice.text}}</h3>
+    <div class="card mb-3">
+        <div class="card-header">
+            <h2>Gestions d'un pré-requis de choix de BG</h2>
+        </div>
+        <div class="card-body">
+            <h4>Étape : {{bg_choice.bg_step.short_name}}</h4>
+            <h4>Question : {{bg_choice.bg_step.question}}</h4>
+            <h4>Option joueur : ({{bg_choice.short_name}}) {{bg_choice.text}}</h4>
+        </div>
+    </div>
 
-        <p>
-            <b>Ce choix dépend de l'étape :</b>
-            <ul style="list-style: none;">
-                {% for bg_step in bg_steps %}
+    <div class="border rounded p-2 mb-2">
+        <b>Ce choix dépend de l'étape :</b>
+        <ul style="list-style: none;">
+            {% for bg_step in bg_steps %}
+            <li>
+                <label>
+                    <input type="radio" value="{{ bg_step.pk }}" name="step_id" 
+                        hx-post=""
+                        hx-target="#choice-list"
+                        hx-swap="outerHTML"/>
+                    {{ bg_step.short_name }}
+                </label>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="border rounded p-2 mb-2">
+        <b>Choix en pré-requis :</b>
+        {% partialdef choice-list inline %}
+        <form method="post">
+            {% csrf_token %}
+            <ul style="list-style: none;" id="choice-list">
+                {% for choice in choices %}
                 <li>
                     <label>
-                        <input type="radio" value="{{ bg_step.pk }}" name="step_id" 
-                            hx-post=""
-                            hx-target="#choice-list"
-                            hx-swap="outerHTML"/>
-                        {{ bg_step.short_name }}
+                        <input type="radio" value="{{ choice.pk }}" name="choice_id" {% if bg_choice.requisit and bg_choice.requisit.pk == choice.pk %}checked{% endif %}/>
+                        {{ choice.short_name }}
                     </label>
                 </li>
                 {% endfor %}
             </ul>
-        </p>
-        <p>
-            <b>Choix en pré-requis :</b>
-            {% partialdef choice-list inline %}
-            <form method="post">
-                {% csrf_token %}
-                <ul style="list-style: none;" id="choice-list">
-                    {% for choice in choices %}
-                    <li>
-                        <label>
-                            <input type="radio" value="{{ choice.pk }}" name="choice_id" {% if bg_choice.requisit and bg_choice.requisit.pk == choice.pk %}checked{% endif %}/>
-                            {{ choice.short_name }}
-                        </label>
-                    </li>
-                    {% endfor %}
-                </ul>
-                {% if choices %}
-                    {% bootstrap_button button_type="submit" content="Valider" extra_classes="submit_btn" %}
+            {% if choices %}
+                <div class="text-center">
                     {% if bg_choice.requisit %}
-                    <button class="btn btn-danger" hx-delete="" hx-confirm="Êtes-vous sûr(e) de vouloir supprimer le pré-requis ?"><i class="fa-solid fa-square-xmark"></i> Effacer</button>
+                    {% bootstrap_button button_type="submit" content="Valider" extra_classes="submit_btn w-25" %}
+                    <button class="btn btn-danger w-25" hx-delete="" hx-confirm="Êtes-vous sûr(e) de vouloir supprimer le pré-requis ?"><i class="fa-solid fa-square-xmark"></i> Effacer</button>
+                    {% else %}
+                        {% bootstrap_button button_type="submit" content="Valider" extra_classes="submit_btn w-75" %}
                     {% endif %}
-                {% endif %}
-            </form>
-            {% endpartialdef %}
-        </p>
+                </div>
+            {% endif %}
+        </form>
+        {% endpartialdef %}
+    </div>
 
-        <script>
-            var rad = document.getElementsByName("step_id")
-            for (var i = 0; i < rad.length; i++) {
-                rad[i].addEventListener('change', function() {
-                    if (this.checked) {
-                        console.log(this.value)
-                    }
-                });
-            }
-        </script>
+    <script>
+        var rad = document.getElementsByName("step_id")
+        for (var i = 0; i < rad.length; i++) {
+            rad[i].addEventListener('change', function() {
+                if (this.checked) {
+                    console.log(this.value)
+                }
+            });
+        }
+    </script>
 {% endblock %}

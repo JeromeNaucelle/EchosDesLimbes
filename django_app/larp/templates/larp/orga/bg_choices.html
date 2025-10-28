@@ -86,7 +86,7 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
                             {% else %}
                             (aucun actuellement)
                             {% endif %}
-                            <a href="{% url 'larp:bg_choice_requisit' choice.pk %}"><input type="button" value="Gérer le pré-requis" class="w-100"/></a>
+                            <a href="{% url 'larp:bg_choice_requisit' choice.pk %}"><input type="button" value="Gérer le pré-requis" class="btn btn-info w-100"/></a>
 
                         </td>
                     </tr>

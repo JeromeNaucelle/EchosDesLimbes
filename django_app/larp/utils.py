@@ -2,6 +2,9 @@ from django.http import HttpRequest
 from larp import models as larp_models
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
+from reportlab.platypus import TableStyle
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib import colors
 
 
 class CurrentInscription():
@@ -59,3 +62,32 @@ def orga_or_denied(request:HttpRequest, raise_exception=True):
         return True
     if raise_exception:
             raise PermissionDenied
+    
+PDF_TABLE_STYLE = TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.lightgrey),
+        ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
+        ('BACKGROUND', (1, 0), (1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black)
+    ])
+
+
+def get_pdf_custom_styles(generic_styles):
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=generic_styles['Heading1'],
+        fontSize=18,
+        spaceAfter=30,
+        alignment=1,  # Center alignment
+    )
+    heading_style = ParagraphStyle(
+        'CustomHeading',
+        parent=generic_styles['Heading2'],
+        fontSize=14,
+        spaceAfter=12,
+        spaceBefore=20,
+    )
+    return title_style, heading_style

@@ -17,7 +17,7 @@ from django_htmx.http import HttpResponseClientRedirect
 
 from .models import Profile, Inscription, PnjInfos,PjInfos, Larp, Opus, BgStep, BgChoice, Character_Bg_choices, Faction
 from larp.forms import ProfileForm, PnjInfosForm, PjInfosForm, BgAnswerForm, BgStepForm, BgChoiceForm
-from larp.utils import has_orga_permission, orga_or_denied
+from larp.utils import has_orga_permission, orga_or_denied, get_pdf_custom_styles, PDF_TABLE_STYLE
 from dataclasses import dataclass
 
     
@@ -482,20 +482,7 @@ def view_pj_pdf(request: HttpRequest, pjinfos_id: int):
     
     # Get styles
     styles = getSampleStyleSheet()
-    title_style = ParagraphStyle(
-        'CustomTitle',
-        parent=styles['Heading1'],
-        fontSize=18,
-        spaceAfter=30,
-        alignment=1,  # Center alignment
-    )
-    heading_style = ParagraphStyle(
-        'CustomHeading',
-        parent=styles['Heading2'],
-        fontSize=14,
-        spaceAfter=12,
-        spaceBefore=20,
-    )
+    title_style, heading_style = get_pdf_custom_styles(styles)
     
     # Build PDF content
     story = []
@@ -516,16 +503,7 @@ def view_pj_pdf(request: HttpRequest, pjinfos_id: int):
     ]
     
     general_table = Table(general_data, colWidths=[2*inch, 3*inch])
-    general_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (0, -1), colors.lightgrey),
-        ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
-        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
-        ('BACKGROUND', (1, 0), (1, -1), colors.beige),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black)
-    ]))
+    general_table.setStyle(PDF_TABLE_STYLE)
     
     story.append(general_table)
     story.append(Spacer(1, 20))
@@ -616,20 +594,7 @@ def view_pnj_pdf(request: HttpRequest, pnjinfos_id: int):
     
     # Get styles
     styles = getSampleStyleSheet()
-    title_style = ParagraphStyle(
-        'CustomTitle',
-        parent=styles['Heading1'],
-        fontSize=18,
-        spaceAfter=30,
-        alignment=1,  # Center alignment
-    )
-    heading_style = ParagraphStyle(
-        'CustomHeading',
-        parent=styles['Heading2'],
-        fontSize=14,
-        spaceAfter=12,
-        spaceBefore=20,
-    )
+    title_style, heading_style = get_pdf_custom_styles(styles)
     
     # Build PDF content
     story = []
@@ -649,16 +614,7 @@ def view_pnj_pdf(request: HttpRequest, pnjinfos_id: int):
     ]
     
     general_table = Table(general_data, colWidths=[2*inch, 3*inch])
-    general_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (0, -1), colors.lightgrey),
-        ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
-        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
-        ('BACKGROUND', (1, 0), (1, -1), colors.beige),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black)
-    ]))
+    general_table.setStyle(PDF_TABLE_STYLE)
     
     story.append(general_table)
     story.append(Spacer(1, 20))
@@ -672,16 +628,7 @@ def view_pnj_pdf(request: HttpRequest, pnjinfos_id: int):
     ]
     
     preferences_table = Table(preferences_data, colWidths=[2*inch, 3*inch])
-    preferences_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (0, -1), colors.lightgrey),
-        ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
-        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
-        ('BACKGROUND', (1, 0), (1, -1), colors.beige),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black)
-    ]))
+    preferences_table.setStyle(PDF_TABLE_STYLE)
     
     story.append(preferences_table)
     story.append(Spacer(1, 20))

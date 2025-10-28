@@ -26,7 +26,7 @@
 </style>
 {% endblock %}
 
-    <h2 class="pb-4">{{ title }}</h2>
+    <h2 class="pb-4">Fiche d'information : {{ requested_user.username }}</h2>
     <p>
         Ces informations doivent être renseignées de bonne foi et avant toute participation à l'une de nos aventure, de façon à permettre une organisation et une sécurité optimale.
     </p>
@@ -56,8 +56,10 @@
             <br/>
             {% bootstrap_field form.emergency_contact %}
         </fieldset>
+        {% if request.user.pk == requested_user.pk %}
         <div style="text-align: center;">
             {% bootstrap_button button_type="submit" content="Valider" extra_classes="submit_btn" %}
         </div>
+        {% endif %}
     </form>
 {% endblock %}

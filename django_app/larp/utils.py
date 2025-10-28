@@ -1,3 +1,4 @@
+from django.http import HttpRequest
 from larp import models as larp_models
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
@@ -48,3 +49,13 @@ def has_orga_permission(user: User, larp: larp_models.Larp, raise_exception=True
     if raise_exception:
             raise PermissionDenied
 
+
+def orga_or_denied(request:HttpRequest, raise_exception=True):
+    user = request.user
+    
+    if user.is_superuser:
+        return True
+    if request.session.get('is_orga', False):
+        return True
+    if raise_exception:
+            raise PermissionDenied

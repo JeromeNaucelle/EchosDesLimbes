@@ -99,7 +99,7 @@ class LarpMenu(CMSAttachMenu):
 
         node = NavigationNode(
                 title=f"{request.user.username}",
-                url=reverse("larp:profile"),
+                url=reverse("larp:profile", kwargs={'user_id': request.user.pk}),
                 id=1,  # unique id for this node within the menu
             )
         node.level = 0
@@ -107,7 +107,7 @@ class LarpMenu(CMSAttachMenu):
 
         node = NavigationNode(
                 title='Mon profil',
-                url=reverse("larp:profile"),
+                url=reverse("larp:profile", kwargs={'user_id': request.user.pk}),
                 id=2,  # unique id for this node within the menu
                 parent_id=1
             )

@@ -86,7 +86,7 @@
                         {% for pj in faction_info.pj_list %}
                         <tr>
                             <td>{{ pj.name }}</td>
-                            <td>{{ pj.user.get_full_name }} ({{ pj.user.username }})</td>
+                            <td><a href="{% url 'larp:profile' pj.user.pk %}">{{pj.user.get_full_name }} ({{ pj.user.username }}) </a></td>
                             <td>
                                 <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj' pj.pk %}">Voir</a>
                                 <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj_pdf' pj.pk %}">PDF</a>
@@ -114,7 +114,7 @@
                         {% for pnjf in faction_info.pnjf_list %}
                         <tr>
                             <td>{{ pnjf.pj_infos.name }}</td>
-                            <td>{{ pnjf.user.get_full_name }} ({{ pnjf.user.username }})</td>
+                            <td><a href="{% url 'larp:profile' pnjf.user.pk %}">{{ pnjf.user.get_full_name }} ({{ pnjf.user.username }})</a></td>
                             <td>
                                 <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj' pnjf.pj_infos.pk %}">Voir PJ</a>
                                 <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj_pdf' pnjf.pj_infos.pk %}">PDF PJ</a>

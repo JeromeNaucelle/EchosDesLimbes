@@ -17,7 +17,7 @@ from django_htmx.http import HttpResponseClientRedirect
 
 from .models import Profile, Inscription, PnjInfos,PjInfos, Larp, Opus, BgStep, BgChoice, Character_Bg_choices, Faction
 from larp.forms import ProfileForm, PnjInfosForm, PjInfosForm, BgAnswerForm, BgStepForm, BgChoiceForm
-from larp.utils import has_orga_permission
+from larp.utils import has_orga_permission, orga_or_denied
 from dataclasses import dataclass
 
     
@@ -378,15 +378,12 @@ def bg_steps(request: HttpRequest, faction_id: int):
 
 
 @login_required
-def profile(request: HttpRequest):
-    # TODO: check que request.user.pk == user_pk ou que request.user est orga
-    user_pk = request.GET.get('user_id', request.user.pk)
+def profile(request: HttpRequest, user_id: int):
+    if not request.user.pk == user_id:
+        orga_or_denied(request)
 
-    
-
-    requested_user = User.objects.get(pk=user_pk)
+    requested_user = User.objects.get(pk=user_id)
     context = {
-        'title': "Mes informations",
         'requested_user': requested_user
     }
     profile = Profile.objects.get(user=requested_user)
@@ -400,13 +397,15 @@ def profile(request: HttpRequest):
             profile.activated = True
             profile.save()
             context['form'] = form
-            return render(request, 'larp/profile_form.html', 
-            context)
+            return render(request, 
+                            'larp/profile_form.html', 
+                            context)
         # If the form was invalid send the user back to fix it
         else:
             context['form'] = form
-            return render(request, 'larp/profile_form.html', 
-            context)
+            return render(request, 
+                          'larp/profile_form.html', 
+                            context)
     # if a GET (or any other method) we'll create a blank form
     else:
         form = ProfileForm(instance=profile)

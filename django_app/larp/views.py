@@ -280,14 +280,14 @@ def bg_choices(request: HttpRequest, bg_step_id: int):
                 if form.is_valid():
                     form.save()
                 # On retourne un formulaire vide s'il est valide
-                    form = BgStepForm(action='add-choice')
+                    form = BgChoiceForm(action='add-choice')
             else:
                 form = BgChoiceForm(request.POST, action=action)
                 if form.is_valid():
                     choice = form.save(commit=False)
                     choice.bg_step = bg_step
                     choice.save()
-                    form = BgStepForm(action='add-choice')
+                    form = BgChoiceForm(action='add-choice')
 
     return render(request, template, 
             {

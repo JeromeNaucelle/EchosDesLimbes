@@ -97,8 +97,31 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
                 {% endfor %}
             </tbody>
         </table>
+
+        <script>
+            function initForAction(action) {
+                console.log("initForAction : "+action);
+                let empty_btn = document.body.querySelector(
+                        "[name='empty'][data-action='"+ action +"']"
+                    );
+                let text_element = document.body.querySelector(
+                        "[name='text'][data-action='"+ action +"']"
+                    );
+
+                empty_btn.addEventListener("click", function() {
+                        if(empty_btn.checked) {
+                            text_element.disabled = true;
+                            text_element.value = "Description libre du joueur"
+                        } else {
+                            text_element.disabled = false;
+                            text_element.value = ""
+                        }
+                }); 
+            }
+        </script>
+
         {% partialdef choice-form inline %}
-        <div id="choice-form" class="fade-me-in{% if action != 'edit-choice' %}-origin{% endif %}">
+        <div id="choice-form" class="fade-me-in{% if action != 'edit-choice' %}-origin{% endif %}" hx-on::after-settle="initForAction('edit-choice')">
             {% if action == 'edit-choice' %}
             <hr>
             <h3>Modifier une option :</h3>
@@ -126,17 +149,7 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
         </div>
 
         <script>
-            let empty_btn = document.getElementById('id_empty')
-            let text_element = document.getElementById('id_text')
-            empty_btn.addEventListener("click", function() {
-                if(empty_btn.checked) {
-                    text_element.disabled = true;
-                    text_element.value = "Description libre du joueur"
-                } else {
-                    text_element.disabled = false;
-                    text_element.value = ""
-                }
-            }); 
+            initForAction('add-choice');
         </script>
 
 {% endblock %}

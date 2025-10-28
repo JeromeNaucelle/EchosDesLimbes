@@ -161,6 +161,14 @@ class BgChoiceForm(forms.ModelForm):
                                         'value': self.instance.pk
                                     }))
             self.fields['short_name'].widget.attrs['autofocus'] = True
+            instance :larp_models.BgChoice= self.instance
+            if instance.empty:
+                self.fields['text'].widget.attrs['disabled'] = True
+            self.fields['short_name'].widget.attrs['autofocus'] = True
+
+        field :forms.Field
+        for field in self.fields.values():
+            field.widget.attrs['data-action'] = action
 
     def clean(self):
         cleaned_data = super().clean()

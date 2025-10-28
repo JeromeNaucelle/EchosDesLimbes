@@ -23,7 +23,6 @@ from . import views
 app_name = "payments"
 
 urlpatterns = [
-    path('', views.HomePageView.as_view(), name='home'),
     path('config', views.stripe_config, name='config'), 
     path('create-checkout-session/<int:ticket_id>', views.create_checkout_session, name='create-cs'),
     path('success', views.SuccessView.as_view(), name='success'),

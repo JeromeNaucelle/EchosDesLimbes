@@ -14,10 +14,6 @@ import stripe
 import pprint
 
 
-class HomePageView(TemplateView):
-    template_name = 'home.html'
-
-
 class PurchaseListView(ListView):
     model = Purchase
     paginate_by = 100  # if pagination is desired
@@ -35,11 +31,11 @@ def stripe_config(request):
     
 
 class SuccessView(TemplateView):
-    template_name = 'success.html'
+    template_name = 'payments/success.html'
 
 
 class CancelledView(TemplateView):
-    template_name = 'cancelled.html'
+    template_name = 'payments/cancelled.html'
 
 
 @csrf_exempt
@@ -115,7 +111,7 @@ def stripe_webhook(request):
             'access_type': access_type
         }
         text_content = render_to_string(
-                "emails/buy_confirmation.txt",
+                "payments/emails/buy_confirmation.txt",
                 context=context,
         )
 

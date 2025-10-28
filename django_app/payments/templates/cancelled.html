@@ -7,7 +7,8 @@
 {% endaddtoblock %}
 
 {% block cms_content %}
-    <p>Paiment annulé</p>
+    <h3>Paiment annulé</h3>
+    <a href="{{ request.session.url_achat }}"><button class="btn btn-info mt-2"><i class="fa-solid fa-arrow-left me-2"></i> Retourner aux achats</button></a>
 {% endblock %}
 
 <p>Your payment succeeded.</p>

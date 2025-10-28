@@ -3,7 +3,8 @@ Merci de nous rejoindre dans l'aventure. Nous vous confirmons l'achat de votre t
 
 ------------------
 
-Ticket : {{ opus }}     Prix : {{ price }}€
+Ticket : {{ opus.name }}     Prix : {{ price }}€
+Type : {{ access_type}}
 
 ------------------
 

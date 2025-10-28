@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load sekizai_tags django_bootstrap5 %}
+
+{% block page_head %}
+    {% addtoblock "css" %}
+        <style>
+
+        .table > :not(caption) > * > * {
+                background-color: rgba(255,255,255,0.3);
+                color: white;
+            }
+
+        .table > thead > * > * {
+                background-color: rgba(255,255,255,0.5);
+                color: rgb(0, 0, 0);
+                font-size: 1.2rem;
+                border: none;
+            }
+
+        .fade-me-in {
+            opacity: 100;
+            transition: opacity 2s ease-in;
+        }
+        .fade-me-in-origin {
+            opacity: 0;
+        }
+            
+
+        </style>
+    {% endaddtoblock %}
+{% endblock %}
+
+{% block cms_content %}
+<h1>Mes achats</h1>
+
+
+<table class="table mt-4">
+    <thead>
+        <td>Article</td>
+        <td>Prix</td>
+        <td>Date</td>
+    </thead>
+    <tbody>
+        {% for purchase in object_list %}
+            <tr>
+                <td>{{purchase.article}}</td>
+                <td>{{purchase.price}} €</td>
+                <td>{{purchase.created_at}}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="3"><h4>Aucun achat pour l'instant</h4></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

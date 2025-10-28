@@ -29,5 +29,6 @@ urlpatterns = [
     path('success', views.SuccessView.as_view(), name='success'),
     path('cancelled', views.CancelledView.as_view(), name='cancelled'),
     path('webhook', views.stripe_webhook, name='webhook'),
+    path('my-purchases', views.PurchaseListView.as_view(), name="purchase-list"),
 ]
 

@@ -130,7 +130,14 @@ class LarpMenu(CMSAttachMenu):
         if is_orga:
             nodes.append(node)
         
-        return nodes
+        node = NavigationNode(
+                title='Mes achats',
+                url=reverse("payments:purchase-list"),
+                id=5,  # unique id for this node within the menu
+                parent_id=1
+            )
+        nodes.append(node)
 
+        return nodes
 
 menu_pool.register_menu(LarpMenu)

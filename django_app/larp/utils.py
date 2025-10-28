@@ -90,4 +90,9 @@ def get_pdf_custom_styles(generic_styles):
         spaceAfter=12,
         spaceBefore=20,
     )
-    return title_style, heading_style
+    indent_style = ParagraphStyle(
+        'CustomIndentedParagraph',
+        parent=generic_styles['Normal'],
+        leftIndent=8
+    )
+    return title_style, heading_style, indent_style

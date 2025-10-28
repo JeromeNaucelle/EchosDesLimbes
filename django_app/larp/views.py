@@ -414,6 +414,83 @@ def profile(request: HttpRequest, user_id: int):
     
 
 @login_required
+def view_profile_pdf(request: HttpRequest, user_id: int):
+    if not request.user.pk == user_id:
+        orga_or_denied(request)
+
+    user = User.objects.get(pk=user_id)
+    profile = Profile.objects.get(user=user)
+    
+    # Create PDF response
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="fiche_sécurité_{user.first_name}_{user.last_name}.pdf"'
+    
+    # Create PDF document
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=18)
+    
+    # Get styles
+    styles = getSampleStyleSheet()
+    title_style, heading_style, indent_style = get_pdf_custom_styles(styles)
+    
+    # Build PDF content
+    story = []
+    
+    # Title
+    story.append(Paragraph(f"Fiche Sécurité: {user.first_name} {user.last_name}", title_style))
+    
+    # General Information
+    story.append(Paragraph("Profil utilisateur", heading_style))
+
+    birthdate = profile.birthdate.strftime("%d / %m / %Y")
+    story.append(Paragraph(f"<b>Date de naissance : </b> {birthdate}", styles['Normal']))
+
+    story.append(Spacer(1, 12))
+    pseudos = profile.pseudos.replace('\n', '<br/>')
+    story.append(Paragraph(f"<b>Pseudo sur les réseaux sociaux : </b>", styles['Normal']))
+    story.append(Paragraph(pseudos, indent_style))
+
+    story.append(Spacer(1, 20))
+
+    # Security informations
+    story.append(Paragraph("Informations de sécurité", heading_style))
+
+    story.append(Paragraph(f"<b>Régime alimentaire, allergie ou autre élément de santé : </b>", styles['Normal']))
+    story.append(Paragraph(profile.food.replace('\n', '<br/>'), indent_style))
+
+    story.append(Spacer(1, 12))
+    story.append(Paragraph(f"<b>Personnes avec qui je ne souhaite pas jouer : </b>", styles['Normal']))
+    story.append(Paragraph(profile.unwanted_people.replace('\n', '<br/>'), indent_style))
+    
+    story.append(Spacer(1, 12))
+    xp_gn = Profile.XP_GN[profile.xp_gn].value
+    story.append(Paragraph(f"<b>Expérience GNistique : </b> {xp_gn}", styles['Normal']))
+
+    story.append(Spacer(1, 12))
+    story.append(Paragraph(f"<b>Phobies : </b>", styles['Normal']))
+    story.append(Paragraph(profile.fears.replace('\n', '<br/>'), indent_style))
+
+    story.append(Spacer(1, 12))
+    triggers = [str(t) for t in profile.triggers.all()]
+    story.append(Paragraph(f"<b>Désirs de non jeu / triggers : </b>", styles['Normal']))
+    story.append(Paragraph('<br/>'.join(triggers), indent_style))
+
+    story.append(Spacer(1, 20))
+    story.append(Paragraph("Contacts d'urgence", heading_style))
+    story.append(Paragraph(profile.emergency_contact.replace('\n', '<br/>'), indent_style))
+    
+        # Build PDF
+    doc.build(story)
+    
+    # Get PDF content
+    pdf_content = buffer.getvalue()
+    buffer.close()
+    
+    response.write(pdf_content)
+    return response
+    
+
+@login_required
 def character_list(request: HttpRequest):
     from larp.utils import only_last_inscriptions
     #TODO : si les infos de profil (sécurité) ne sont pas remplies, redirection
@@ -482,7 +559,7 @@ def view_pj_pdf(request: HttpRequest, pjinfos_id: int):
     
     # Get styles
     styles = getSampleStyleSheet()
-    title_style, heading_style = get_pdf_custom_styles(styles)
+    title_style, heading_style, indent_style = get_pdf_custom_styles(styles)
     
     # Build PDF content
     story = []
@@ -594,7 +671,7 @@ def view_pnj_pdf(request: HttpRequest, pnjinfos_id: int):
     
     # Get styles
     styles = getSampleStyleSheet()
-    title_style, heading_style = get_pdf_custom_styles(styles)
+    title_style, heading_style, indent_style = get_pdf_custom_styles(styles)
     
     # Build PDF content
     story = []

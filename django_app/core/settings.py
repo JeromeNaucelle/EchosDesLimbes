@@ -119,6 +119,14 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'core.urls'
 SITE_ID=1
 
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "default_cache_table",
+    }
+}
+
+
 DATETIME_INPUT_FORMATS = [
     "%Y-%m-%d %H:%M:%S",  # '2006-10-25 14:30:59'
     "%Y-%m-%d %H:%M:%S.%f",  # '2006-10-25 14:30:59.000200'

@@ -48,6 +48,8 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
                 <h4>Question : {{bg_step.question}}</h4>
             </div>
         </div>
+
+        <a href="{% url 'larp:bg_steps' bg_step.faction.pk %}"><button class="btn btn-info my-3"><i class="fa-regular fa-circle-left"></i> Retour aux étapes</button></a>
         
         <h4 class="mb-1">Options proposées au joueur</h4>
         <table class="w-100 table">
@@ -81,13 +83,17 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
                             </div>
                         </td>
                         <td style="width: 20%;">
-                            {% if choice.requisit %}
-                            {{ choice.requisit }}<br>
-                            {% else %}
-                            (aucun actuellement)
-                            {% endif %}
-                            <a href="{% url 'larp:bg_choice_requisit' choice.pk %}"><input type="button" value="Gérer le pré-requis" class="btn btn-info w-100"/></a>
 
+                            {% if bg_step.step > 1 %}
+                                {% if choice.requisit %}
+                                {{ choice.requisit }}<br>
+                                {% else %}
+                                (aucun actuellement)
+                                {% endif %}
+                                <a href="{% url 'larp:bg_choice_requisit' choice.pk %}"><input type="button" value="Gérer le pré-requis" class="btn btn-info w-100"/></a>
+                            {% else %}
+                            /
+                            {% endif %}
                         </td>
                     </tr>
                     {% empty %}

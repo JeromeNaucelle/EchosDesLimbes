@@ -36,7 +36,10 @@ def on_pre_save(sender, instance, created, **kwargs):
 
         
 @receiver(user_logged_in)
-def check_if_orga(sender, user, request, **kwargs):
+def check_if_orga(sender, user : User, request, **kwargs):
+    if user.is_superuser:
+        request.session['is_orga'] = True
+        return
     user_groups_id = user.groups.all().values_list('pk')
     user_orga_larps = larp_models.Larp.objects.filter(orga_group_id__in=user_groups_id)
     is_orga = True if user_orga_larps.count() > 0 else False

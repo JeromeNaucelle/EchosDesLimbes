@@ -126,6 +126,7 @@ CACHES = {
     }
 }
 
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 DATETIME_INPUT_FORMATS = [
     "%Y-%m-%d %H:%M:%S",  # '2006-10-25 14:30:59'

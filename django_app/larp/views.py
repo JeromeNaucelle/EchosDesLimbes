@@ -4,21 +4,20 @@ from django.urls import reverse
 from django.http.request import HttpRequest
 from django.contrib.auth.models import User, Group
 from django.db import models
-from django.db.models import Q, QuerySet
+from django.db.models import Q
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
 from reportlab.lib.units import inch
-from reportlab.lib import colors
 from io import BytesIO
 from django.db import transaction
 from django_htmx.http import HttpResponseClientRedirect
+from django.contrib import messages
 
 from .models import Profile, Inscription, PnjInfos,PjInfos, Larp, Opus, BgStep, BgChoice, Character_Bg_choices, Faction
 from larp.forms import ProfileForm, PnjInfosForm, PjInfosForm, BgAnswerForm, BgStepForm, BgChoiceForm
 from larp.utils import has_orga_permission, orga_or_denied, get_pdf_custom_styles, PDF_TABLE_STYLE
-from dataclasses import dataclass
 
     
 @login_required
@@ -494,6 +493,9 @@ def view_profile_pdf(request: HttpRequest, user_id: int):
 def character_list(request: HttpRequest):
     from larp.utils import only_last_inscriptions
     #TODO : si les infos de profil (sécurité) ne sont pas remplies, redirection
+    if request.user.profile.activated is False:
+        messages.success(request, 'Merci de commencer par remplir vos informations de sécurité avant de de créer vos fiches PJ/PNJ')
+        return redirect(reverse('larp:profile', kwargs={'user_id': request.user.pk}))
 
     context = {
         'can_add_character': False

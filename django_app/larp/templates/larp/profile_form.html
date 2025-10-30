@@ -5,26 +5,32 @@
 
 {% block cms_content %}
 
-{% block "js" %}
-<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
-{% endblock %}
+    {% block "js" %}
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    {% endblock %}
 
-{{ form.media }}
+    {{ form.media }}
 
-{% block "css" %}
-<style>
-    fieldset {
-        border: solid 1px;
-        border-radius: 25px;
-        padding: 1em;
-        margin-bottom: 2em;
-    }
+    {% block "css" %}
+    <style>
+        fieldset {
+            border: solid 1px;
+            border-radius: 25px;
+            padding: 1em;
+            margin-bottom: 2em;
+        }
 
-    .submit_btn {
-        width: 50%;
-    }
-</style>
-{% endblock %}
+        .submit_btn {
+            width: 50%;
+        }
+    </style>
+    {% endblock %}
+
+    {% if messages %}
+        {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}danger{% else %}{{ message.tags }}{% endif %}{% endif %}" role="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
 
     <h2 class="pb-4">Fiche d'information : {{ requested_user.username }}</h2>
     <p>

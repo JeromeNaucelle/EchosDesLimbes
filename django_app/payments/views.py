@@ -57,6 +57,8 @@ def create_checkout_session(request : HttpRequest, ticket_id: int):
             "opus_id": ticket.opus.pk
         }
 
+        description = f"Billet {ticket.access_type} pour {ticket.opus}"
+
         if ticket.access_type != 'PNJV':
             faction_id = int(request.GET['faction'])
             metadata["faction_id"] = faction_id
@@ -85,7 +87,7 @@ def create_checkout_session(request : HttpRequest, ticket_id: int):
                         'unit_amount': int(ticket.price*100),
                         'product_data': {
                             'name': str(ticket),
-                            'description': 'TODO',
+                            'description': description,
                             'metadata': metadata,
                         },
                     },
@@ -152,7 +154,6 @@ def stripe_webhook(request):
         pprint.pprint(event)
         print("Payment was successful.")
         
-        # TODO: run some custom code here
         line_items = stripe.checkout.Session.list_line_items(
             event['data']['object']['id'],
             expand=['data.price.product']

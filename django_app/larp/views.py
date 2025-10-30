@@ -492,9 +492,8 @@ def view_profile_pdf(request: HttpRequest, user_id: int):
 @login_required
 def character_list(request: HttpRequest):
     from larp.utils import only_last_inscriptions
-    #TODO : si les infos de profil (sécurité) ne sont pas remplies, redirection
     if request.user.profile.activated is False:
-        messages.success(request, 'Merci de commencer par remplir vos informations de sécurité avant de de créer vos fiches PJ/PNJ')
+        messages.error(request, 'Merci de commencer par remplir vos informations de sécurité avant de de créer vos fiches PJ/PNJ')
         return redirect(reverse('larp:profile', kwargs={'user_id': request.user.pk}))
 
     context = {

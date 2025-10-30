@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from django.urls import reverse
 
 
 
@@ -9,7 +10,7 @@ def user_logout(request):
     from django.contrib.auth import logout
 
     logout(request)
-    return render(request, 'registration/logged_out.html', {})
+    return redirect(reverse('pages-root'))
 
 def test(request: HttpRequest):
     from larp.models import Larp

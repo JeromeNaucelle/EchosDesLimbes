@@ -83,7 +83,7 @@ class PnjInfosForm(forms.ModelForm):
 class PjInfosForm(forms.ModelForm):
     class Meta:
         model = larp_models.PjInfos
-        exclude = ['user', 'larp', 'bg_choices', 'bg_completed']
+        exclude = ['user', 'larp', 'bg_choices', 'bg_completed', 'status']
         labels = {
             'objectives': 'Objectifs de jeu (réservé aux orgas)'
         }
@@ -99,8 +99,8 @@ class PjInfosForm(forms.ModelForm):
         orga = has_orga_permission(user, larp, False)
         already_existing = True if 'instance' in kwargs else False
         super(PjInfosForm, self).__init__(*args, **kwargs)
-        if not orga and 'objectives' in self.fields:
-            self.fields.pop('objectives')
+        if not orga:
+            self.fields['objectives'].disabled = True
         self.fields['faction'].label = larp.factions_name
         self.fields['faction'].disabled = True
 

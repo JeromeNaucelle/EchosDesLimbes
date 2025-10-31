@@ -9,7 +9,7 @@ from django.http import HttpResponse
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
-from reportlab.lib.units import inch
+from reportlab.lib.units import mm
 from io import BytesIO
 from django.db import transaction
 from django_htmx.http import HttpResponseClientRedirect
@@ -459,7 +459,7 @@ def view_profile_pdf(request: HttpRequest, user_id: int):
     story = []
     
     # Title
-    story.append(Paragraph(f"Fiche Sécurité: {user.first_name} {user.last_name}", title_style))
+    story.append(Paragraph(f"Fiche Sécurité : {user.first_name} {user.last_name}", title_style))
     
     # General Information
     story.append(Paragraph("Profil utilisateur", heading_style))
@@ -593,20 +593,18 @@ def view_pj_pdf(request: HttpRequest, pjinfos_id: int):
     
     # Title
     story.append(Paragraph(f"Fiche Personnage: {pj_infos.name}", title_style))
-    story.append(Spacer(1, 20))
     
     # General Information
     story.append(Paragraph("Informations générales", heading_style))
     
     general_data = [
-        ['Nom du personnage:', pj_infos.name],
-        ['Joueur:', f"{pj_infos.user.first_name} {pj_infos.user.last_name} ({pj_infos.user.username})"],
-        ['GN:', pj_infos.larp.name],
-        ['Faction:', pj_infos.faction.name],
-        ['Préférence émotionnelle:', pj_infos.get_emotions_display()],
+        ['Joueur :', f"{pj_infos.user.first_name} {pj_infos.user.last_name}"],
+        ["Nom d'utilisateur :", f"{pj_infos.user.username}"],
+        [pj_infos.larp.factions_name, pj_infos.faction.name],
+        ['Préférence émotionnelle :', pj_infos.get_emotions_display()],
     ]
     
-    general_table = Table(general_data, colWidths=[2*inch, 3*inch])
+    general_table = Table(general_data, colWidths=[60*mm,100*mm])
     general_table.setStyle(PDF_TABLE_STYLE)
     
     story.append(general_table)
@@ -615,7 +613,7 @@ def view_pj_pdf(request: HttpRequest, pjinfos_id: int):
     # Skills
     story.append(Paragraph("Compétences", heading_style))
     story.append(Paragraph(f"<b>Compétences actuelles:</b>", styles['Normal']))
-    story.append(Paragraph(pj_infos.skills.replace('\n', '<br/>'), styles['Normal']))
+    story.append(Paragraph(pj_infos.skills.replace('\n', '<br/>'), indent_style))
     
     if pj_infos.last_learned:
         story.append(Spacer(1, 12))
@@ -626,7 +624,7 @@ def view_pj_pdf(request: HttpRequest, pjinfos_id: int):
     # Objectives
     if pj_infos.objectives:
         story.append(Paragraph("Objectifs de jeu", heading_style))
-        story.append(Paragraph(pj_infos.objectives.replace('\n', '<br/>'), styles['Normal']))
+        story.append(Paragraph(pj_infos.objectives.replace('\n', '<br/>'), indent_style))
         story.append(Spacer(1, 20))
     
     # Background Choices
@@ -644,7 +642,7 @@ def view_pj_pdf(request: HttpRequest, pjinfos_id: int):
             if bg_choice.player_text:
                 story.append(Spacer(1, 6))
                 story.append(Paragraph(f"<b>Commentaire du joueur:</b>", styles['Normal']))
-                story.append(Paragraph(bg_choice.player_text.replace('\n', '<br/>'), styles['Normal']))
+                story.append(Paragraph(bg_choice.player_text.replace('\n', '<br/>'), indent_style))
             
             story.append(Spacer(1, 15))
     
@@ -705,19 +703,18 @@ def view_pnj_pdf(request: HttpRequest, pnjinfos_id: int):
     
     # Title
     story.append(Paragraph(f"Fiche PNJ: {pnj_infos.user.first_name} {pnj_infos.user.last_name}", title_style))
-    story.append(Spacer(1, 20))
     
     # General Information
     story.append(Paragraph("Informations générales", heading_style))
     
     general_data = [
-        ['Joueur:', f"{pnj_infos.user.first_name} {pnj_infos.user.last_name} ({pnj_infos.user.username})"],
-        ['GN:', pnj_infos.larp.name],
-        ['Préférence horaire:', pnj_infos.get_prefered_time_display() if pnj_infos.prefered_time else 'Non spécifié'],
-        ['Action de nuit:', 'Oui' if pnj_infos.nigth_action else 'Non' if pnj_infos.nigth_action is not None else 'Non spécifié'],
+        ['Joueur :', f"{pnj_infos.user.first_name} {pnj_infos.user.last_name}"],
+        ["Nom d'utilisateur :", f"{pnj_infos.user.username}"],
+        ['Préférence horaire :', pnj_infos.get_prefered_time_display() if pnj_infos.prefered_time else 'Non spécifié'],
+        ['Action de nuit :', 'Oui' if pnj_infos.nigth_action else 'Non' if pnj_infos.nigth_action is not None else 'Non spécifié'],
     ]
     
-    general_table = Table(general_data, colWidths=[2*inch, 3*inch])
+    general_table = Table(general_data, colWidths=[60*mm,100*mm])
     general_table.setStyle(PDF_TABLE_STYLE)
     
     story.append(general_table)
@@ -727,11 +724,11 @@ def view_pnj_pdf(request: HttpRequest, pnjinfos_id: int):
     story.append(Paragraph("Préférences de jeu", heading_style))
     
     preferences_data = [
-        ['Logistique vs Rôles:', pnj_infos.get_logistic_or_role_display() if pnj_infos.logistic_or_role is not None else 'Non spécifié'],
-        ['Niveau d\'importance:', pnj_infos.get_importance_display() if pnj_infos.importance is not None else 'Non spécifié'],
+        ['Logistique (0) vs Rôles (5) :', pnj_infos.get_logistic_or_role_display() if pnj_infos.logistic_or_role is not None else 'Non spécifié'],
+        ['Niveau d\'importance (0-5) :', pnj_infos.get_importance_display() if pnj_infos.importance is not None else 'Non spécifié'],
     ]
     
-    preferences_table = Table(preferences_data, colWidths=[2*inch, 3*inch])
+    preferences_table = Table(preferences_data, colWidths=[60*mm,100*mm])
     preferences_table.setStyle(PDF_TABLE_STYLE)
     
     story.append(preferences_table)
@@ -740,13 +737,13 @@ def view_pnj_pdf(request: HttpRequest, pnjinfos_id: int):
     # Talents
     if pnj_infos.talent:
         story.append(Paragraph("Talents particuliers", heading_style))
-        story.append(Paragraph(pnj_infos.talent.replace('\n', '<br/>'), styles['Normal']))
+        story.append(Paragraph(pnj_infos.talent.replace('\n', '<br/>'), indent_style))
         story.append(Spacer(1, 20))
     
     # Organizer Information
     if pnj_infos.info_orga:
         story.append(Paragraph("Informations pour l'organisation", heading_style))
-        story.append(Paragraph(pnj_infos.info_orga.replace('\n', '<br/>'), styles['Normal']))
+        story.append(Paragraph(pnj_infos.info_orga.replace('\n', '<br/>'), indent_style))
         story.append(Spacer(1, 20))
     
     # Build PDF

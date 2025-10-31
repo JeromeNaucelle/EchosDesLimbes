@@ -182,3 +182,7 @@ class BgChoiceForm(forms.ModelForm):
             cleaned_data['text'] = "Description libre du joueur"
 
 
+class PjStatusForm(forms.ModelForm):
+    class Meta:
+        model = larp_models.PjInfos
+        fields = ['status']

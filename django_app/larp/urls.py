@@ -31,6 +31,7 @@ urlpatterns = [
     path('view_pnj/<int:pnjinfos_id>/pdf', views.view_pnj_pdf, name='view_pnj_pdf'),
     path('create_pj/<int:inscription_id>', views.create_pj, name='create_pj'),
     path('edit_pj/<int:pjinfos_id>', views.edit_pj, name='edit_pj'),
+    path('change_pj_status/<int:pjinfo_id>', views.change_pj_status, name='change_pj_status'),
     path('view_pj/<int:pjinfos_id>', views.view_pj, name='view_pj'),
     path('view_pj/<int:pjinfos_id>/pdf', views.view_pj_pdf, name='view_pj_pdf'),
     path('complete_bg/<int:pjinfo_id>', views.complete_bg, name='complete_bg'),

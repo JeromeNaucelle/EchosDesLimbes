@@ -4,15 +4,7 @@ from django.contrib.auth.models import User, Group
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import Q
 from enum import Enum
-
-# Create your models here.
-VALIDATION_STEPS = (
-    ("unlocked", "Débloqué"),
-    ("player_validated", "Validé par joueur"),
-    ("orga_locked", "Validé par orga"),
-)
-
-NB_STEPS = 10
+        
 
 class AccessType(models.TextChoices):
     PJ      = "PJ", "Joueur"
@@ -62,12 +54,6 @@ class Profile(models.Model):
         return fullname
 
 
-
-def step_validators():
-    return [
-        MaxValueValidator(limit_value=NB_STEPS, message=f"C'est le numéro de la question, il doit être compris entre 0 et {NB_STEPS}"),
-        MinValueValidator(limit_value=0, message=f"C'est le numéro de la question, il doit être compris entre 0 et {NB_STEPS}")
-        ]
 
 class Larp(models.Model):
     class Meta:
@@ -151,6 +137,7 @@ class PnjInfos(models.Model):
     logistic_or_role= models.CharField(choices=SIX_CHOICES.choices(), null=True, max_length=6)
     importance      = models.CharField(choices=SIX_CHOICES.choices(), null=True, max_length=6)
     talent          = models.TextField(blank=True, default="", null=True)
+    completed       = models.BooleanField(default=False)
     
 
 class Inscription(models.Model):
@@ -194,7 +181,7 @@ class BgStep(models.Model):
                 deferrable=models.Deferrable.DEFERRED),
         ]
 
-    step = models.IntegerField(default=0, validators=step_validators())
+    step = models.IntegerField(default=0)
     faction    = models.ForeignKey(Faction, on_delete=models.CASCADE)
     short_name = models.CharField(verbose_name="Nom (court)", max_length=20)
     question = models.TextField()
@@ -232,7 +219,7 @@ class Character_Bg_choices(models.Model):
     pjInfos = models.ForeignKey("PjInfos", on_delete=models.CASCADE, null=True)
     bgchoice = models.ForeignKey("BgChoice", on_delete=models.CASCADE)
     player_text = models.TextField(blank=True, default="")
-    step = models.IntegerField(default=0, validators=step_validators())
+    step = models.IntegerField(default=0)
 
 
 class PjInfos(models.Model):
@@ -242,6 +229,15 @@ class PjInfos(models.Model):
         MOD_ALL     = "Modéré toutes émotions"
         SURPRISE    = "Surprenez-moi, vous avez carte blanche"
         INTENSE     = "Intense, je suis motivé.e pour du drama"
+
+        @classmethod
+        def choices(cls):
+            return [(key.name, key.value) for key in cls]
+        
+    class SHEET_STATUS(Enum):
+        UNLOCKED            = "En édition par le joueur"
+        PLAYER_VALIDATED    = "Attente de validation Orga"
+        ORGA_VALIDATED      = "Validé par Orga"
 
         @classmethod
         def choices(cls):
@@ -258,27 +254,10 @@ class PjInfos(models.Model):
     last_learned= models.CharField(max_length=60, verbose_name="Compétence apprise lors du dernier opus", blank=True, default='')
     emotions    = models.CharField(choices=EMOTION_PREFERENCE.choices(), blank=False, default=[EMOTION_PREFERENCE.SOFT], max_length=25)
     objectives  = models.TextField(verbose_name="Objectifs de jeu", blank=True, default='')
-    bg_choices = models.ManyToManyField(BgChoice, blank=True, through="Character_Bg_choices")
+    bg_choices   = models.ManyToManyField(BgChoice, blank=True, through="Character_Bg_choices")
     bg_completed = models.BooleanField(default=False, verbose_name="Background complété")
+    status       = models.CharField(choices=SHEET_STATUS.choices(), blank=False, default=SHEET_STATUS.UNLOCKED.name, max_length=25)
 
-    def get_parts(self) -> list[str]: 
-        result = []
-        though_table = self.bg_choices.through
-        charac_choices = though_table.objects.filter(pjInfos=self).order_by("step").prefetch_related("bgchoice")
-        for charac_choice in charac_choices:
-            choice = charac_choice.bgchoice
-            text = choice.text
-            if text is None or text == "":
-                text = "[Texte manquant]"
-            #step_name = BgChoiceType[choice.type].value
-            step_name = choice.short_name
-            result.append((step_name, text))
-        return result
-
-    def reset(self):
-        though_table = self.bg_choices.through
-        though_table.objects.filter(pjInfos=self).delete()
-        self.save()
 
 
 

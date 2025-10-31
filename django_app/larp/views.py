@@ -16,8 +16,9 @@ from django_htmx.http import HttpResponseClientRedirect
 from django.contrib import messages
 
 from .models import Profile, Inscription, PnjInfos,PjInfos, Larp, Opus, BgStep, BgChoice, Character_Bg_choices, Faction
-from larp.forms import ProfileForm, PnjInfosForm, PjInfosForm, BgAnswerForm, BgStepForm, BgChoiceForm
+from larp.forms import ProfileForm, PnjInfosForm, PjInfosForm, BgAnswerForm, BgStepForm, BgChoiceForm, PjStatusForm
 from larp.utils import has_orga_permission, orga_or_denied, get_pdf_custom_styles, PDF_TABLE_STYLE
+from django.core.exceptions import PermissionDenied
 
     
 @login_required
@@ -175,6 +176,28 @@ def orga_gn(request: HttpRequest, larp_id):
 
     return render(request, 'larp/orga/orga_gn.html', context)
 
+
+@login_required
+def change_pj_status(request: HttpRequest, pjinfo_id):
+    from django.core.exceptions import BadRequest, PermissionDenied
+    pj_infos = PjInfos.objects.select_related('larp').get(pk=pjinfo_id)
+
+    if not request.method == "POST":
+        raise BadRequest("Method not allowed")
+    
+    status = request.POST.get('status', '')
+    if status not in list(PjInfos.SHEET_STATUS.__members__.keys()):
+        raise BadRequest("Unkonwon status")
+    
+    is_orga = has_orga_permission(request.user, pj_infos.larp, False)
+    if not is_orga:
+        if request.user.pk == pj_infos.user.pk or \
+            status != PjInfos.SHEET_STATUS.PLAYER_VALIDATED.name:
+            raise PermissionDenied()
+    
+    pj_infos.status = status
+    pj_infos.save()
+    return redirect(reverse('larp:view_pj', kwargs={'pjinfos_id': pjinfo_id}))
 
 @login_required
 def edit_pj(request: HttpRequest, pjinfos_id):
@@ -520,19 +543,22 @@ def view_pj(request: HttpRequest, pjinfos_id: int):
     
     # Check if user has permission to view this character
     # User can view their own characters or be an orga for the larp
-    if pj_infos.user != request.user:
-        has_orga_permission(request.user, pj_infos.larp)
+    is_orga = has_orga_permission(request.user, pj_infos.larp, False)
+    if pj_infos.user != request.user and not is_orga:
+        raise PermissionDenied()
     
     # Get background choices for this character
     bg_choices = Character_Bg_choices.objects.filter(pjInfos=pj_infos).select_related('bgchoice__bg_step').order_by('step')
     
     context = {
         'title': f"Personnage: {pj_infos.name}",
+        'status_form': PjStatusForm(instance=pj_infos),
         'pj_infos': pj_infos,
         'bg_choices': bg_choices,
         'larp': pj_infos.larp,
         'faction': pj_infos.faction,
         'user': pj_infos.user,
+        'is_orga': is_orga, 
     }
     
     return render(request, 'larp/view_pj.html', context)

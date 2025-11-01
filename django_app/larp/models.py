@@ -144,6 +144,12 @@ class PnjInfos(models.Model):
             return 'édition joueur'
         else:
             return 'terminé'
+        
+    @property
+    def status_color_class(self) -> str:
+        if self.completed:
+            return 'status-success'
+        return ''
 
 
 class Inscription(models.Model):
@@ -272,7 +278,14 @@ class PjInfos(models.Model):
             return 'attente orga'
         if self.status == PjInfos.SHEET_STATUS.ORGA_VALIDATED.name:
             return 'terminé'
-
+        
+    @property
+    def status_color_class(self) -> str:
+        if self.status == PjInfos.SHEET_STATUS.PLAYER_VALIDATED.name:
+            return 'status-danger'
+        if self.status == PjInfos.SHEET_STATUS.ORGA_VALIDATED.name:
+            return 'status-success'
+        return ''
 
 
 

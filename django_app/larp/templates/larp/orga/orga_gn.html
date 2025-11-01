@@ -22,7 +22,19 @@
 
 
         .sheet_col {
-            max-width: 4em;
+            width: 200px;
+        }
+
+        .status-success {
+            background-color: var(--bs-success);
+            padding-left: 0.2em;
+            padding-right: 0.2em;
+        }
+
+        .status-danger {
+            background-color: var(--bs-danger);
+            padding-left: 0.2em;
+            padding-right: 0.2em;
         }
             
 
@@ -100,8 +112,9 @@
                             <td class="sheet_col">
                                 <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj' pj.pk %}">Voir</a>
                                 <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj_pdf' pj.pk %}">PDF</a>
-                                <br/>
-                                status : {{ pj.short_status }}
+                                <div class="{{ pj.status_color_class }}">
+                                    status : {{ pj.short_status }}
+                                </div>
                             </td>
                         </tr>
                         {% empty %}
@@ -117,8 +130,8 @@
                         <tr class="pnjf_row">
                             <th>Personnage</th>
                             <th>Joueur</th>
-                            <th class="sheet_col">Fiche PJ</th>
                             <th class="sheet_col">Fiche PNJ</th>
+                            <th class="sheet_col">Fiche PJ</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -127,17 +140,20 @@
                             <td>{{ pnjf.pj_infos.name }}</td>
                             <td><a href="{% url 'larp:profile' pnjf.user.pk %}">{{ pnjf.user.get_full_name }} ({{ pnjf.user.username }})</a></td>
                             <td class="sheet_col">
-                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj' pnjf.pj_infos.pk %}">Voir PJ</a>
-                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj_pdf' pnjf.pj_infos.pk %}">PDF PJ</a>
-                                <br/>
-                                status : {{ pnjf.pj_infos.short_status }}
-                            </td>
-                            <td class="sheet_col">
                                 <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pnj' pnjf.pnj_infos.pk %}">Voir PNJ</a>
                                 <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pnj_pdf' pnjf.pnj_infos.pk %}">PDF PNJ</a>
-                                <br/>
-                                status : {{ pnjf.pnj_infos.short_status }}
+                                <div class="{{ pnjf.pnj_infos.status_color_class }}">
+                                    status : {{ pnjf.pnj_infos.short_status }}
+                                </div>
                             </td>
+                            <td class="sheet_col">
+                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj' pnjf.pj_infos.pk %}">Voir PJ</a>
+                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj_pdf' pnjf.pj_infos.pk %}">PDF PJ</a>
+                                <div class="{{ pnjf.pj_infos.status_color_class }}">
+                                status : {{ pnjf.pj_infos.short_status }}
+                                </div>
+                            </td>
+
                         </tr>
                         {% empty %}
                         <tr><td colspan="4">Aucun PNJF dans cette faction.</td></tr>
@@ -167,8 +183,9 @@
                             </td>
                             <td class="sheet_col">
                                 <a class="btn btn-sm btn-outline-light" href="{% url 'larp:pnj_form' pnj.pk %}">Voir/Éditer</a>
-                                <br/>
-                                status : {{ pnj.short_status }}
+                                <div class="{{ pnj.status_color_class }}">
+                                    status : {{ pnj.short_status }}
+                                </div>
                             </td>
                         </tr>
                         {% empty %}

@@ -23,14 +23,14 @@
                     <tr class="">
                         <td>Fiche PNJ</td>
                         <td><a href="{% url 'larp:view_pnj' inscription.pnj_infos.pk %}">Voir/Modifier mes informations</a></td>
-                        <td>TODO</td>
+                        <td>{{ inscription.pnj_infos.short_status }}</td>
                     </tr>
                 {% endif %}
                 {% for character in inscription.pj_infos %}
                     <tr class="">
                         <td>Fiche Personnage</td>
                         <td><a href="{% url 'larp:view_pj' character.pk %}">{{ character.name }} ({{ character.faction }})</a></td>
-                        <td>TODO</td>
+                        <td>{{ character.short_status }}</td>
                     </tr>
                 {% endfor %}
                 {% if inscription.can_add_character %}

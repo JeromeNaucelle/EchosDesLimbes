@@ -108,7 +108,11 @@
                 <a href="{% url 'larp:view_pj_pdf' pj_infos.pk %}" class="btn btn-success">
                     <i class="fa-solid fa-file-pdf"></i> Exporter en PDF
                 </a>
+                {% if request.user.pk == pj_infos.user.pk %}
                 <a href="{% url 'larp:character_list' %}" class="btn btn-outline-secondary">
+                {% else %}
+                <a href="{% url 'larp:orga_gn' pj_infos.larp.pk %}" class="btn btn-outline-secondary">
+                {% endif %}
                     <i class="fa-solid fa-arrow-left"></i> Retour à la liste
                 </a>
             </div>

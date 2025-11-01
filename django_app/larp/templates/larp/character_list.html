@@ -7,10 +7,6 @@
     <h1>Mes fiches</h1>
     </br>
 
-    {% if can_add_character %}
-    <button ><i class="fa-solid fa-plus"></i> Créer un personnage</button>
-    {% endif %}
-
 
         {% for larp, inscription in larp_inscriptions.items %}
         <h3>{{ larp }}</h3>
@@ -39,7 +35,7 @@
                 {% endfor %}
                 {% if inscription.can_add_character %}
                     <tr class="">
-                        <td><a href="{% url 'larp:create_pj' inscription.inscription_id %}"><button class="btn-primary"><i class="fa-solid fa-plus"></i> Céer un personnage</button></a></td>
+                        <td><a href="{% url 'larp:create_pj' inscription.inscription_id %}"><button class="btn btn-primary"><i class="fa-solid fa-plus"></i> Céer un personnage</button></a></td>
                         <td></td>
                         <td></td>
                     </tr>

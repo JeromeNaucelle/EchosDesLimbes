@@ -138,7 +138,13 @@ class PnjInfos(models.Model):
     importance      = models.CharField(choices=SIX_CHOICES.choices(), null=True, max_length=6)
     talent          = models.TextField(blank=True, default="", null=True)
     completed       = models.BooleanField(default=False)
-    
+
+    def short_status(self) -> str:
+        if not self.completed:
+            return 'édition joueur'
+        else:
+            return 'terminé'
+
 
 class Inscription(models.Model):
     class Meta:
@@ -257,6 +263,15 @@ class PjInfos(models.Model):
     bg_choices   = models.ManyToManyField(BgChoice, blank=True, through="Character_Bg_choices")
     bg_completed = models.BooleanField(default=False, verbose_name="Background complété")
     status       = models.CharField(choices=SHEET_STATUS.choices(), blank=False, default=SHEET_STATUS.UNLOCKED.name, max_length=25)
+
+    @property
+    def short_status(self) -> str:
+        if self.status == PjInfos.SHEET_STATUS.UNLOCKED.name:
+            return 'édition joueur'
+        if self.status == PjInfos.SHEET_STATUS.PLAYER_VALIDATED.name:
+            return 'attente orga'
+        if self.status == PjInfos.SHEET_STATUS.ORGA_VALIDATED.name:
+            return 'terminé'
 
 
 

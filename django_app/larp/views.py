@@ -178,9 +178,28 @@ def orga_gn(request: HttpRequest, larp_id):
 
 
 @login_required
-def change_pj_status(request: HttpRequest, pjinfo_id):
+def change_pnj_status(request: HttpRequest, pnjinfos_id):
     from django.core.exceptions import BadRequest, PermissionDenied
-    pj_infos = PjInfos.objects.select_related('larp').get(pk=pjinfo_id)
+    pnj_infos = PnjInfos.objects.select_related('larp').get(pk=pnjinfos_id)
+
+    if not request.method == "POST":
+        raise BadRequest("Method not allowed")
+    
+    completed = bool(request.POST.get('completed', 0))    
+    is_orga = has_orga_permission(request.user, pnj_infos.larp, False)
+    if not is_orga:
+        if request.user.pk != pnj_infos.user.pk or \
+            completed is not True:
+            raise PermissionDenied()
+    
+    pnj_infos.completed = completed
+    pnj_infos.save()
+    return redirect(reverse('larp:view_pnj', kwargs={'pnjinfos_id': pnjinfos_id}))
+
+@login_required
+def change_pj_status(request: HttpRequest, pjinfos_id):
+    from django.core.exceptions import BadRequest, PermissionDenied
+    pj_infos = PjInfos.objects.select_related('larp').get(pk=pjinfos_id)
 
     if not request.method == "POST":
         raise BadRequest("Method not allowed")
@@ -191,13 +210,13 @@ def change_pj_status(request: HttpRequest, pjinfo_id):
     
     is_orga = has_orga_permission(request.user, pj_infos.larp, False)
     if not is_orga:
-        if request.user.pk == pj_infos.user.pk or \
+        if request.user.pk != pj_infos.user.pk or \
             status != PjInfos.SHEET_STATUS.PLAYER_VALIDATED.name:
             raise PermissionDenied()
     
     pj_infos.status = status
     pj_infos.save()
-    return redirect(reverse('larp:view_pj', kwargs={'pjinfos_id': pjinfo_id}))
+    return redirect(reverse('larp:view_pj', kwargs={'pjinfos_id': pjinfos_id}))
 
 @login_required
 def edit_pj(request: HttpRequest, pjinfos_id):
@@ -758,8 +777,8 @@ def view_pnj_pdf(request: HttpRequest, pnjinfos_id: int):
 
 
 @login_required
-def complete_bg(request: HttpRequest, pjinfo_id: int):
-    pj_infos = PjInfos.objects.select_related('faction').get(pk=pjinfo_id, user=request.user)
+def complete_bg(request: HttpRequest, pjinfos_id: int):
+    pj_infos = PjInfos.objects.select_related('faction').get(pk=pjinfos_id, user=request.user)
     # Determine next step to display: count completed answers for this pj
     completed_steps = Character_Bg_choices.objects.filter(pjInfos=pj_infos).values_list('step', flat=True)
     next_step = (max(completed_steps) + 1) if completed_steps else 1
@@ -785,7 +804,7 @@ def complete_bg(request: HttpRequest, pjinfo_id: int):
         Q(requisit__isnull=True) | Q(requisit__in=character_choices)
     )
 
-    url_validation = reverse('larp:complete_bg', kwargs={'pjinfo_id': pjinfo_id})
+    url_validation = reverse('larp:complete_bg', kwargs={'pjinfos_id': pjinfos_id})
 
     if request.method == 'GET':
         form = BgAnswerForm(choices_qs=choices_qs)
@@ -820,10 +839,10 @@ def complete_bg(request: HttpRequest, pjinfo_id: int):
                 pj_infos.bg_completed = True
                 pj_infos.save()
                 # Redirect to view_pj since background is now complete
-                return redirect(reverse('larp:view_pj', kwargs={'pjinfos_id': pjinfo_id}))
+                return redirect(reverse('larp:view_pj', kwargs={'pjinfos_id': pjinfos_id}))
 
             # Continue to next step if not completed
-            return redirect(reverse('larp:complete_bg', kwargs={'pjinfo_id': pjinfo_id}))
+            return redirect(reverse('larp:complete_bg', kwargs={'pjinfos_id': pjinfos_id}))
 
         return render(request, 'larp/form.html', {
             'title': bg_step.short_name,

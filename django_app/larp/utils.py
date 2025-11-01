@@ -51,6 +51,7 @@ def has_orga_permission(user: User, larp: larp_models.Larp, raise_exception=True
         return True
     if raise_exception:
             raise PermissionDenied
+    return False
 
 
 def orga_or_denied(request:HttpRequest, raise_exception=True):

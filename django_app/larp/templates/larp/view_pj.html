@@ -91,9 +91,11 @@
 
             <!-- Action Buttons -->
             <div class="d-flex gap-2 mb-4">
+                {% if pj_infos.status == 'UNLOCKED' or is_orga %}
                 <a href="{% url 'larp:edit_pj' pj_infos.pk %}" class="btn btn-primary">
                     <i class="fa-solid fa-edit"></i> Modifier le personnage
                 </a>
+                {% endif %}
                 {% if pj_infos.bg_completed == False %}
                 <a href="{% url 'larp:complete_bg' pj_infos.pk %}" class="btn btn-secondary">
                     <i class="fa-solid fa-list-check"></i> Compléter le background

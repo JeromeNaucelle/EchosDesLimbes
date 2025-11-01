@@ -58,7 +58,7 @@ pouvoir contacter au moins l’un d’entre eux."""
 class PnjInfosForm(forms.ModelForm):
     class Meta:
         model = larp_models.PnjInfos
-        exclude = ['user', 'larp']
+        exclude = ['user', 'larp', 'completed']
         widgets = {
             "prefered_time": forms.RadioSelect(choices=larp_models.PnjInfos.TIME_PREFERENCE.choices()),
             "nigth_action": forms.RadioSelect(choices=[(True, 'Oui'), (False, 'Non')])

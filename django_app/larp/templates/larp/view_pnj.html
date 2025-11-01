@@ -99,9 +99,16 @@
 
             <!-- Action Buttons -->
             <div class="d-flex gap-2 mb-4">
+                {% if not pnj_infos.completed or is_orga %}
                 <a href="{% url 'larp:pnj_form' pnj_infos.pk %}" class="btn btn-primary">
                     <i class="fa-solid fa-edit"></i> Modifier les informations
                 </a>
+                {% endif %}
+                {% if not is_orga and not pnj_infos.completed %}
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#statusConfirmationModal">
+                    Demander la validation Orga
+                    </button>
+                {% endif %}
                 <a href="{% url 'larp:view_pnj_pdf' pnj_infos.pk %}" class="btn btn-success">
                     <i class="fa-solid fa-file-pdf"></i> Exporter en PDF
                 </a>
@@ -111,5 +118,29 @@
             </div>
         </div>
     </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="statusConfirmationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Confirmation</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Attention, en faisant ça vous ne pourrez plus modifier votre fiche sans qu'un orga vous y autorise de nouveau. Avez-vous bien rempli tout ce que vous souhaitiez ?
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <form method="post" action="{% url 'larp:change_pnj_status' pnj_infos.pk %}">
+            <input type="hidden" name="completed" value="1"/>
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Verrouiller</button>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

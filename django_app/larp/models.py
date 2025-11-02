@@ -63,6 +63,8 @@ class Larp(models.Model):
     description  = models.TextField(default="", blank=True)
     factions_name = models.CharField(verbose_name="Dénomination des groupes (Faction, Gang...)", max_length=35)
     orga_group    = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True)
+    pnjv_orga_contact = models.TextField(default="", blank=True, verbose_name="Info de contact orga des PNJV")
+
 
     def __str__(self):
         return self.name
@@ -139,6 +141,7 @@ class PnjInfos(models.Model):
     talent          = models.TextField(blank=True, default="", null=True)
     completed       = models.BooleanField(default=False)
 
+    @property
     def short_status(self) -> str:
         if not self.completed:
             return 'édition joueur'
@@ -150,6 +153,7 @@ class PnjInfos(models.Model):
         if self.completed:
             return 'status-success'
         return ''
+
 
 
 class Inscription(models.Model):

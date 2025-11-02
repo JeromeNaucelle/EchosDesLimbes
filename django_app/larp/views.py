@@ -612,6 +612,10 @@ def view_pj_pdf(request: HttpRequest, pjinfos_id: int):
     
     # Title
     story.append(Paragraph(f"Fiche Personnage: {pj_infos.name}", title_style))
+
+    # Contact Orga
+    story.append(Paragraph("Contact Orga", heading_style))
+    story.append(Paragraph(pj_infos.faction.orga_contact.replace('\n', '<br/>'), indent_style))
     
     # General Information
     story.append(Paragraph("Informations générales", heading_style))
@@ -680,6 +684,10 @@ def view_pj_pdf(request: HttpRequest, pjinfos_id: int):
 def view_pnj(request: HttpRequest, pnjinfos_id: int):
     """Display all information from a PnjInfos instance in read-only format"""
     pnj_infos = PnjInfos.objects.select_related('larp', 'user').get(pk=pnjinfos_id)
+    last_inscription = Inscription.objects.\
+                            select_related('opus__larp').\
+                            filter(user=pnj_infos.user, opus__larp=pnj_infos.larp).\
+                            latest('created_at')
     
     # Check if user has permission to view this PNJ info
     # User can view their own PNJ info or be an orga for the larp
@@ -691,6 +699,7 @@ def view_pnj(request: HttpRequest, pnjinfos_id: int):
         'pnj_infos': pnj_infos,
         'larp': pnj_infos.larp,
         'user': pnj_infos.user,
+        'inscription': last_inscription
     }
     
     return render(request, 'larp/view_pnj.html', context)
@@ -704,6 +713,11 @@ def view_pnj_pdf(request: HttpRequest, pnjinfos_id: int):
     # Check if user has permission to view this PNJ info
     if pnj_infos.user != request.user:
         has_orga_permission(request.user, pnj_infos.larp)
+
+    inscription = Inscription.objects.\
+                            select_related('opus__larp').\
+                            filter(user=pnj_infos.user, opus__larp=pnj_infos.larp).\
+                            latest('created_at')
     
     # Create PDF response
     response = HttpResponse(content_type='application/pdf')
@@ -722,6 +736,14 @@ def view_pnj_pdf(request: HttpRequest, pnjinfos_id: int):
     
     # Title
     story.append(Paragraph(f"Fiche PNJ: {pnj_infos.user.first_name} {pnj_infos.user.last_name}", title_style))
+
+    # Contact Orga
+    story.append(Paragraph("Contact Orga", heading_style))
+    if inscription.access_type == 'PNJV':
+        infos_orga = pnj_infos.larp.pnjv_orga_contact
+    else:
+        infos_orga = inscription.faction.orga_contact
+    story.append(Paragraph(infos_orga.replace('\n', '<br/>'), indent_style))
     
     # General Information
     story.append(Paragraph("Informations générales", heading_style))

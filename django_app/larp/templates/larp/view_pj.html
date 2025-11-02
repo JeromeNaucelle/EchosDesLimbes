@@ -7,6 +7,15 @@
         <div class="col-12">
             <h2 class="pb-4">{{ title }}</h2>
             
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">Informations de contact Orga</h4>
+                </div>
+                <div class="card-body" style="background-color: var(--bs-primary-bg-subtle); color: black;">
+                    {{ pj_infos.faction.orga_contact|linebreaks }}
+                </div>
+            </div>
+
             <!-- Character Basic Information -->
             <div class="card mb-4">
                 <div class="card-header">

@@ -10,6 +10,9 @@
     <p><strong>{{ field }}: {{ error }}</strong></p>
     {% endfor %}
 {% endif %}
+<div class="rounded text-dark p-2 my-3" style="background-color: var(--bs-warning-bg-subtle);">
+    Vos informations personnelles (nom, prénom, informations de sécurités, etc...) seront utilisées uniquement à des fins de sécurité.
+</div>
 
 
 <form action="{{validation_url}}" method="post">

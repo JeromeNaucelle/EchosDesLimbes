@@ -33,9 +33,10 @@
     {% endif %}
 
     <h2 class="pb-4">Fiche d'information : {{ requested_user.username }}</h2>
-    <p>
-        Ces informations doivent être renseignées de bonne foi et avant toute participation à l'une de nos aventure, de façon à permettre une organisation et une sécurité optimale.
-    </p>
+    <div class="rounded text-dark p-2 my-3" style="background-color: var(--bs-warning-bg-subtle);">
+        Vos informations personnelles (nom, prénom, informations de sécurités, etc...) seront utilisées uniquement à des fins de sécurité. Ces informations doivent être renseignées de bonne foi et avant toute participation à l'une de nos aventure, de façon à permettre une organisation et une sécurité optimale.
+    </div>
+
     <form action="{{ url_validation }}" method="post">
         {% csrf_token %}
         <fieldset>
@@ -44,6 +45,9 @@
                 <div>Prénom : {{requested_user.first_name}}</div>
                 <div>Nom : {{requested_user.last_name}}</div> 
             </p>
+            <div class="rounded text-dark p-2 my-3" style="background-color: var(--bs-warning-bg-subtle);">
+                Ces informations sont pour aider vos organisateurs de groupe à savoir qui est qui et vous contacter plus facilement.
+            </div>
             {% bootstrap_field form.pseudos %}
             {% bootstrap_field form.birthdate %}
         </fieldset>

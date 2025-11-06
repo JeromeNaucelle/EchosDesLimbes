@@ -145,7 +145,7 @@ class BgChoiceForm(forms.ModelForm):
         model = larp_models.BgChoice
         fields = ['short_name', "empty", 'text']
         labels = {
-            'empty': "Text libre du joueur",
+            'empty': "Texte libre du joueur",
         }
 
     def __init__(self, *args, **kwargs):
@@ -186,3 +186,9 @@ class PjStatusForm(forms.ModelForm):
     class Meta:
         model = larp_models.PjInfos
         fields = ['status']
+
+class PjDocumentForm(forms.ModelForm):
+    class Meta:
+        model = larp_models.PjDocument
+        fields = ['name', 'document_url']
+

@@ -16,9 +16,9 @@ from django_htmx.http import HttpResponseClientRedirect
 from django.contrib import messages
 
 from .models import Profile, Inscription, PnjInfos,PjInfos, Larp, Opus, BgStep, BgChoice, Character_Bg_choices, Faction
-from larp.forms import ProfileForm, PnjInfosForm, PjInfosForm, BgAnswerForm, BgStepForm, BgChoiceForm, PjStatusForm
+from larp.forms import PjDocumentForm, ProfileForm, PnjInfosForm, PjInfosForm, BgAnswerForm, BgStepForm, BgChoiceForm, PjStatusForm
 from larp.utils import has_orga_permission, orga_or_denied, get_pdf_custom_styles, PDF_TABLE_STYLE
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import BadRequest, PermissionDenied
 
     
 @login_required
@@ -75,6 +75,37 @@ def create_pj(request: HttpRequest, inscription_id):
                         "form": form,
                         'url_validation': url_validation})
     
+
+
+@login_required
+def player_document(request: HttpRequest, pjinfos_id: int):
+    pj_infos = PjInfos.objects.select_related('larp').get(pk=pjinfos_id)
+    has_orga_permission(request.user, pj_infos.larp)
+
+    if request.method == "POST":
+        document_form = PjDocumentForm(request.POST)
+        if document_form.is_valid():
+            pj_doc = document_form.save(commit=False)
+            pj_doc.pj = pj_infos
+            pj_doc.save()
+
+    elif request.method == "DELETE":
+        document_id = request.GET['document_id']
+        document = pj_infos.documents.get(pk=document_id)
+        document.delete()
+
+    else:
+        raise BadRequest("Method not allowed")
+
+    
+    document_form = PjDocumentForm()
+    context = {
+        'is_orga': True,
+        'pj_infos': pj_infos,
+        'document_form': document_form
+        }
+    return render(request, 'larp/view_pj.html#pj-documents', 
+                context)
 
 @login_required
 def orga_gn_list(request: HttpRequest):
@@ -198,7 +229,6 @@ def change_pnj_status(request: HttpRequest, pnjinfos_id):
 
 @login_required
 def change_pj_status(request: HttpRequest, pjinfos_id):
-    from django.core.exceptions import BadRequest, PermissionDenied
     pj_infos = PjInfos.objects.select_related('larp').get(pk=pjinfos_id)
 
     if not request.method == "POST":
@@ -206,7 +236,7 @@ def change_pj_status(request: HttpRequest, pjinfos_id):
     
     status = request.POST.get('status', '')
     if status not in list(PjInfos.SHEET_STATUS.__members__.keys()):
-        raise BadRequest("Unkonwon status")
+        raise BadRequest("Unknown status")
     
     is_orga = has_orga_permission(request.user, pj_infos.larp, False)
     if not is_orga:
@@ -578,6 +608,7 @@ def view_pj(request: HttpRequest, pjinfos_id: int):
         'faction': pj_infos.faction,
         'user': pj_infos.user,
         'is_orga': is_orga, 
+        'document_form': PjDocumentForm()
     }
     
     return render(request, 'larp/view_pj.html', context)

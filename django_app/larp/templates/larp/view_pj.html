@@ -1,5 +1,13 @@
 {% extends CMS_TEMPLATE %}
-{% load django_bootstrap5 %}
+{% load django_bootstrap5  partials django_htmx %}
+
+{% block body_attrs %}
+hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
+{% endblock %}
+
+{% block page_head %}
+{% htmx_script %}
+{% endblock %}
 
 {% block cms_content %}
 <div class="container-fluid">
@@ -15,6 +23,51 @@
                     {{ pj_infos.faction.orga_contact|linebreaks }}
                 </div>
             </div>
+
+            {% partialdef pj-documents inline %}
+            <div class="card mb-4" id="pj-documents">
+                <div class="card-header">
+                    <h4 class="mb-0">Documents et livrets de jeu</h4>
+                </div>
+                <div class="card-body" style="background-color: var(--bs-primary-bg-subtle); color: black;">
+
+                    
+                    <div class="container">
+                        {% for document in pj_infos.documents.all %}
+                        <div class="row mb-1" style="border-bottom: 1px solid rgb(163, 175, 200);">
+                            <div class="col">
+                                <a href="{{ document.document_url }}" style="color: black;"> {{ document }} </a>
+                            </div>
+                            {% if is_orga %}
+                            <div class="col">
+                                <form hx-delete="{% url 'larp:player_document' pj_infos.pk %}" hx-target="#pj-documents" hx-swap="outerHTML">
+                                    {% csrf_token %}
+                                    <input type="hidden" value="{{ document.pk }}" name="document_id"/>
+                                    <button type="submit" class="btn btn-danger m-1" ><i class="fa-solid fa-square-xmark"></i> Supprimer</button>
+                                </form>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% empty %}                        
+                        <div class="row">
+                            Aucun pour l'instant
+                        </div>
+                        {% endfor %}
+                    </div>
+                        
+                    {% if is_orga %}
+                    <h3 class="mt-3">Ajouter un document</h3>
+                    <form hx-post="{% url 'larp:player_document' pj_infos.pk %}" hx-target="#pj-documents" hx-swap="outerHTML">
+                        {% csrf_token %}
+                        {% bootstrap_form document_form %}
+                        <div style="text-align: center;">
+                            <button type="submit" class="btn btn-primary w-75" >Valider</button>
+                        </div>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% endpartialdef %}
 
             <!-- Character Basic Information -->
             <div class="card mb-4">

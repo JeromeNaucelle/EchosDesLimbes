@@ -199,7 +199,7 @@ class BgStep(models.Model):
 
     step = models.IntegerField(default=0)
     faction    = models.ForeignKey(Faction, on_delete=models.CASCADE)
-    short_name = models.CharField(verbose_name="Nom (court)", max_length=20)
+    short_name = models.CharField(verbose_name="Étape", max_length=80)
     question = models.TextField()
 
     def __str__(self):
@@ -215,7 +215,7 @@ class BgChoice(models.Model):
         ]
 
     bg_step = models.ForeignKey(BgStep, on_delete=models.CASCADE, verbose_name="Question background")
-    short_name = models.CharField(verbose_name="Nom (court)", max_length=20)
+    short_name = models.CharField(verbose_name="Choix", max_length=80)
     text = models.TextField(default="", null=True)
     empty = models.BooleanField(default=False, verbose_name="A remplir par le joueur")
     requisit = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, verbose_name="Prérequis")
@@ -274,6 +274,9 @@ class PjInfos(models.Model):
     bg_completed = models.BooleanField(default=False, verbose_name="Background complété")
     status       = models.CharField(choices=SHEET_STATUS.choices(), blank=False, default=SHEET_STATUS.UNLOCKED.name, max_length=25)
 
+    def __str__(self):
+        return self.name
+
     @property
     def short_status(self) -> str:
         if self.status == PjInfos.SHEET_STATUS.UNLOCKED.name:
@@ -293,3 +296,10 @@ class PjInfos(models.Model):
 
 
 
+class PjDocument(models.Model):
+    pj  = models.ForeignKey(PjInfos, on_delete=models.CASCADE, verbose_name="Personnage", related_name='documents')
+    name         = models.CharField(max_length=80, verbose_name="Nom du document") 
+    document_url = models.URLField(verbose_name="URL")
+
+    def __str__(self):
+        return self.name

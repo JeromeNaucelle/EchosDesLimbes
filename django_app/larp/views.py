@@ -16,7 +16,7 @@ from django_htmx.http import HttpResponseClientRedirect
 from django.contrib import messages
 
 from .models import Profile, Inscription, PnjInfos,PjInfos, Larp, Opus, BgStep, BgChoice, Character_Bg_choices, Faction
-from larp.forms import PjDocumentForm, ProfileForm, PnjInfosForm, PjInfosForm, BgAnswerForm, BgStepForm, BgChoiceForm, PjStatusForm
+from larp.forms import PjDocumentForm, ProfileForm, PnjInfosForm, PjInfosForm, BgAnswerForm, BgStepForm, BgChoiceForm, PjStatusForm, CharacterBgTextForm
 from larp.utils import has_orga_permission, orga_or_denied, get_pdf_custom_styles, PDF_TABLE_STYLE
 from django.core.exceptions import BadRequest, PermissionDenied
 
@@ -76,6 +76,30 @@ def create_pj(request: HttpRequest, inscription_id):
                         'url_validation': url_validation})
     
 
+@login_required
+def edit_bg_choice(request: HttpRequest, bgchoice_id: int):
+    charac_choice = Character_Bg_choices.objects.select_related('pjInfos__larp', 'pjInfos__user').get(pk=bgchoice_id)
+    larp = charac_choice.pjInfos.larp
+    if request.user.pk != charac_choice.pjInfos.user.pk:
+        has_orga_permission(request.user, larp)
+
+    if request.method == "GET":
+        form = CharacterBgTextForm(instance=charac_choice)
+
+    elif request.method == "POST":
+        form = CharacterBgTextForm(request.POST, instance=charac_choice)
+        if form.is_valid():
+            form.save()
+
+    else:
+        raise BadRequest("Method not allowed")
+    
+    context = {
+        'bg_choice': charac_choice,
+        'form': form
+        }
+    return render(request, 'larp/bg_choice.html', 
+                context)
 
 @login_required
 def player_document(request: HttpRequest, pjinfos_id: int):
@@ -686,12 +710,11 @@ def view_pj_pdf(request: HttpRequest, pjinfos_id: int):
         story.append(Paragraph("Choix de background", heading_style))
         
         for bg_choice in bg_choices:
-            story.append(Paragraph(f"<b>Étape {bg_choice.step}: {bg_choice.bgchoice.bg_step.short_name}</b>", styles['Normal']))
-            story.append(Paragraph(f"<i>{bg_choice.bgchoice.bg_step.question}</i>", styles['Normal']))
+            story.append(Paragraph(f"<b>Étape {bg_choice.step}: </b><i>{bg_choice.bgchoice.bg_step.question}</i>", styles['Normal']))
             story.append(Spacer(1, 6))
             
             choice_text = bg_choice.bgchoice.text or bg_choice.bgchoice.short_name
-            story.append(Paragraph(f"<b>Choix sélectionné:</b> {choice_text}", styles['Normal']))
+            story.append(Paragraph(f"{choice_text}", styles['Normal']))
             
             if bg_choice.player_text:
                 story.append(Spacer(1, 6))

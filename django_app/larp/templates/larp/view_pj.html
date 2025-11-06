@@ -128,8 +128,19 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
                 </div>
                 <div class="card-body">
                     {% for bg_choice in bg_choices %}
-                    <div class="mb-4">
-                        <h5>Étape {{ bg_choice.step }}: {{ bg_choice.bgchoice.bg_step.short_name }}</h5>
+                    <div class="mb-4" id="bg-choice-{{ bg_choice.pk }}">
+                        <div class="d-flex justify-content-between">
+                            <h5>Étape {{ bg_choice.step }} : </h5>
+
+                            {% if pj_infos.status == 'UNLOCKED' or is_orga %}
+                            <button type="button" 
+                                class="btn btn-success mb-2"
+                                hx-get="{% url 'larp:edit_bg_choice' bg_choice.pk %}"
+                                hx-swap="outerHTML"
+                                hx-target="#bg-choice-{{ bg_choice.pk }}"
+                                > <i class="fa-solid fa-edit"> </i> Modifier</button>
+                            {% endif %}
+                        </div>
                         <p>{{ bg_choice.bgchoice.bg_step.question }}</p>
                         
                         <div class="border p-3 mb-2" style="background-color: var(--grey-bg);">

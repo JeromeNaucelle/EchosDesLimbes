@@ -192,3 +192,15 @@ class PjDocumentForm(forms.ModelForm):
         model = larp_models.PjDocument
         fields = ['name', 'document_url']
 
+class CharacterBgTextForm(forms.ModelForm):
+    class Meta:
+        model = larp_models.Character_Bg_choices
+        fields = ['id', 'player_text']
+        labels = {
+            'player_text': 'Précisions '
+        }
+        widgets = {
+            'id': forms.HiddenInput
+        }
+
+        

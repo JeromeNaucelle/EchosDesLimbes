@@ -1,0 +1,56 @@
+{% load django_bootstrap5  %}
+
+
+{% if request.method == 'GET' %}
+<div class="mb-4" id="bg-choice-{{ bg_choice.pk }}">
+    <div class="d-flex justify-content-between">
+        <h5>Étape {{ bg_choice.step }} : </h5>
+    </div>
+    <p>{{ bg_choice.bgchoice.bg_step.question }}</p>
+    
+    <div class="border p-3 mb-2" style="background-color: var(--grey-bg);">
+        {% if bg_choice.bgchoice.text %}
+        <em>{{ bg_choice.bgchoice.text }}</em>
+        {% endif %}
+    </div>
+    
+    <form method="post" 
+        hx-post="{% url 'larp:edit_bg_choice' bg_choice.pk %}"  
+        hx-swap="outerHTML"
+        hx-target="#bg-choice-{{ bg_choice.pk }}">
+
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <div style="text-align: center;">
+            {% bootstrap_button button_type="submit" content="Valider" extra_classes="submit_btn w-75" %}
+        </div>
+    </form>
+</div>
+
+{% else %}
+    <div class="mb-4" id="bg-choice-{{ bg_choice.pk }}">
+        <div class="d-flex justify-content-between">
+            <h5>Étape {{ bg_choice.step }} : </h5>
+            <button type="button" 
+                class="btn btn-success mb-2"
+                hx-get="{% url 'larp:edit_bg_choice' bg_choice.pk %}"
+                hx-swap="outerHTML"
+                hx-target="#bg-choice-{{ bg_choice.pk }}"
+                > <i class="fa-solid fa-edit"> </i> Modifier</button>
+        </div>
+        <p>{{ bg_choice.bgchoice.bg_step.question }}</p>
+        
+        <div class="border p-3 mb-2" style="background-color: var(--grey-bg);">
+            {% if bg_choice.bgchoice.text %}
+            <em>{{ bg_choice.bgchoice.text }}</em>
+            {% endif %}
+        </div>
+        
+        {% if bg_choice.player_text %}
+        <div class="border p-3" style="background-color: var(--grey-bg);">
+            <strong>Commentaire du joueur:</strong><br>
+            {{ bg_choice.player_text|linebreaks }}
+        </div>
+        {% endif %}
+    </div>
+{% endif %}

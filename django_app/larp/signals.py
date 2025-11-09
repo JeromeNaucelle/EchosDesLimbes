@@ -28,7 +28,7 @@ def on_pre_save(sender, instance, **kwargs):
             
 
 @receiver(post_save)
-def on_pre_save(sender, instance, created, **kwargs):
+def on_post_save(sender, instance, created, **kwargs):
     if sender == User and created:
         profile = larp_models.Profile.objects.create(user=instance)
         profile.save()

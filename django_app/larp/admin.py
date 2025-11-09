@@ -27,12 +27,8 @@ admin.site.register(models.Opus, OpusAdmin)
 
 class TicketAdmin(admin.ModelAdmin):
     # a list of displayed columns name.
-    list_select_related = ["larp", "opus"]
-    list_display = ['larp','opus', 'price', 'access_type']
-
-    @admin.display(description= "GN")
-    def larp(self, Ticket):
-        return Ticket.opus.larp
+    list_select_related = ["opus", "opus__larp"]
+    list_display = ['larp_name','opus', 'price', 'access_type']
     
     @admin.display(description= "Opus")
     def opus(self, Ticket):

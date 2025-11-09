@@ -198,6 +198,10 @@ class Ticket(models.Model):
     def __str__(self):
         return f"{self.access_type} - {self.opus}"
     
+    @admin.display(ordering="opus__larp__name", description= "GN")
+    def larp_name(self):
+        return format_html(self.opus.larp.name)
+    
 
 class BgStep(models.Model):
     class Meta:

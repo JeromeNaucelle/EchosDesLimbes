@@ -2,6 +2,8 @@ from datetime import date
 from django.db import models
 from django.contrib.auth.models import User, Group
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.contrib import admin
+from django.utils.html import format_html
 from django.db.models import Q
 from enum import Enum
         
@@ -83,6 +85,9 @@ class Opus(models.Model):
     def __str__(self):
         return self.name
     
+    @admin.display(ordering="larp__name", description= "GN")
+    def larp_name(self):
+        return format_html(self.larp.name)
     
 
 class Faction(models.Model):
@@ -153,6 +158,10 @@ class PnjInfos(models.Model):
         if self.completed:
             return 'status-success'
         return ''
+    
+    @admin.display(ordering="larp__name", description= "GN")
+    def larp_name(self):
+        return format_html(self.larp.name)
 
 
 
@@ -171,6 +180,10 @@ class Inscription(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.opus}"
+    
+    @admin.display(ordering="opus__larp__name", description= "GN")
+    def larp_name(self):
+        return format_html(self.opus.larp.name)
     
 
 class Ticket(models.Model):
@@ -293,6 +306,10 @@ class PjInfos(models.Model):
         if self.status == PjInfos.SHEET_STATUS.ORGA_VALIDATED.name:
             return 'status-success'
         return ''
+    
+    @admin.display(ordering="larp__name", description= "GN")
+    def larp_name(self):
+        return format_html(self.larp.name)
 
 
 

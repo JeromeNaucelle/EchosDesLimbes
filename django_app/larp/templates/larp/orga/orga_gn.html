@@ -7,20 +7,6 @@
     {% addtoblock "css" %}
         <style>
 
-        .table > :not(caption) > * > * {
-                background-color: rgba(255,255,255,0.3);
-                border-bottom-width: 0;
-                color: white;
-            }
-
-        .table > thead > * > * {
-                background-color: rgba(255,255,255,0.5);
-                color: rgb(0, 0, 0);
-                font-size: 1.2rem;
-                border: none;
-            }
-
-
         .sheet_col {
             width: 200px;
         }
@@ -53,19 +39,19 @@
             </div>
         </div>
 
-         <a href="{% url 'larp:orga_gn_list' %}"><button class="btn btn-info my-3"><i class="fa-regular fa-circle-left"></i>Retour à mes GN (Orga)</button></a>
+         <a href="{% url 'larp:orga_gn_list' %}"><button class="btn btn-sand my-3"><i class="fa-regular fa-circle-left"></i>Retour à mes GN (Orga)</button></a>
 
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
-              <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Fiches perso</button>
+              <button class="nav-link active" id="sheets-tab" data-bs-toggle="tab" data-bs-target="#sheets-tab-pane" type="button" role="tab" aria-controls="sheets-tab-pane" aria-selected="true">Fiches perso</button>
             </li>
             <li class="nav-item" role="presentation">
-              <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Étapes de BG</button>
+              <button class="nav-link" id="bg-step-tab" data-bs-toggle="tab" data-bs-target="#bg-step-tab-pane" type="button" role="tab" aria-controls="bg-step-tab-pane" aria-selected="false">Étapes de BG</button>
             </li>
           </ul>
           <div class="tab-content" id="myTabContent">
             <!-- Tab de gestion des fiches perso -->
-            <div class="tab-pane fade show active mt-2" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+            <div class="tab-pane fade show active mt-2" id="sheets-tab-pane" role="tabpanel" aria-labelledby="sheets-tab" tabindex="0">
                 <!-- Faction Filter -->
                 <div class="row mb-4">
                     <div class="col-md-6">
@@ -82,7 +68,7 @@
                                     PNJV
                                 </option>
                             </select>
-                            <button type="submit" class="btn btn-primary">Filtrer</button>
+                            <button type="submit" class="btn btn-sand">Filtrer</button>
                         </form>
                     </div>
                 </div>
@@ -197,7 +183,7 @@
             </div>
 
             <!-- Tab de gestion des background -->
-            <div class="tab-pane fade mt-2" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+            <div class="tab-pane fade mt-2" id="bg-step-tab-pane" role="tabpanel" aria-labelledby="bg-step-tab" tabindex="0">
                 <h4>Gérer les étapes et options de background pour le/la {{ larp.factions_name }}</h4>
                 <p>
                     <ul>

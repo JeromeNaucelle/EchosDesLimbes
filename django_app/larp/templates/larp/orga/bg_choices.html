@@ -12,18 +12,6 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
     {% addtoblock "css" %}
         <style>
 
-        .table > :not(caption) > * > * {
-                background-color: rgba(255,255,255,0.3);
-                color: white;
-            }
-
-        .table > thead > * > * {
-                background-color: rgba(255,255,255,0.5);
-                color: rgb(0, 0, 0);
-                font-size: 1.2rem;
-                border: none;
-            }
-
         .fade-me-in {
             opacity: 100;
             transition: opacity 2s ease-in;
@@ -49,7 +37,7 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
             </div>
         </div>
 
-        <a href="{% url 'larp:bg_steps' bg_step.faction.pk %}"><button class="btn btn-info my-3"><i class="fa-regular fa-circle-left"></i> Retour aux étapes</button></a>
+        <a href="{% url 'larp:bg_steps' bg_step.faction.pk %}"><button class="btn btn-sand my-3"><i class="fa-regular fa-circle-left"></i> Retour aux étapes</button></a>
         
         <h4 class="mb-1">Options proposées au joueur</h4>
         <table class="w-100 table">

@@ -12,18 +12,6 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
     {% addtoblock "css" %}
         <style>
 
-        .table > :not(caption) > * > * {
-                background-color: rgba(255,255,255,0.3);
-                color: white;
-            }
-
-        .table > thead > * > * {
-                background-color: rgba(255,255,255,0.5);
-                color: rgb(0, 0, 0);
-                font-size: 1.2rem;
-                border: none;
-            }
-
         .fade-me-in {
             opacity: 100;
             transition: opacity 2s ease-in;
@@ -39,7 +27,7 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
 {% endblock %}
 
 {% block cms_content %}
-        <div class="card p-2 mb-3">
+        <div class="card mb-3">
             <div class="card-header">
                 <h2>Gestion des étapes de BG</h2>
             </div>
@@ -49,7 +37,7 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
             </div>
         </div>
     
-        <a href="{% url 'larp:orga_gn' faction.larp.pk %}"><button class="btn btn-info my-3"><i class="fa-regular fa-circle-left"></i> Retour au GN</button></a>
+        <a href="{% url 'larp:orga_gn' faction.larp.pk %}"><button class="btn btn-sand my-3"><i class="fa-regular fa-circle-left"></i> Retour au GN</button></a>
 
         <table class="w-100 table">
             <thead>

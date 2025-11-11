@@ -184,7 +184,7 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
                 {% if request.user.pk == pj_infos.user.pk %}
                 <a href="{% url 'larp:character_list' %}" class="btn btn-outline-secondary">
                 {% else %}
-                <a href="{% url 'larp:orga_gn' pj_infos.larp.pk %}" class="btn btn-outline-secondary">
+                <a href="{% url 'larp:orga_gn' pj_infos.larp.pk %}" class="btn btn-sand">
                 {% endif %}
                     <i class="fa-solid fa-arrow-left"></i> Retour à la liste
                 </a>

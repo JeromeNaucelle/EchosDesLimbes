@@ -19,7 +19,7 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
                 <div class="card-header">
                     <h4 class="mb-0">Informations de contact Orga</h4>
                 </div>
-                <div class="card-body" style="background-color: var(--bs-primary-bg-subtle); color: black;">
+                <div class="card-body" style="background-color: var(--sand-bg-subtle)">
                     {{ pj_infos.faction.orga_contact|linebreaks }}
                 </div>
             </div>
@@ -29,7 +29,7 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
                 <div class="card-header">
                     <h4 class="mb-0">Documents et livrets de jeu</h4>
                 </div>
-                <div class="card-body" style="background-color: var(--bs-primary-bg-subtle); color: black;">
+                <div class="card-body" style="background-color: var(--sand-bg-subtle)">
 
                     
                     <div class="container">
@@ -70,41 +70,42 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
             {% endpartialdef %}
 
             <!-- Character Basic Information -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h4 class="mb-0">Informations générales</h4>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
+            <div class="row">
+                <div class="col-6 col-md-6 col-sm-12">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h4 class="mb-0">Informations générales</h4>
+                        </div>
+                        <div class="card-body">
                             <p><strong>Nom du personnage:</strong> {{ pj_infos.name }}</p>
                             <p><strong>Joueur:</strong> {{ user.first_name }} {{ user.last_name }} ({{ user.username }})</p>
                             <p><strong>GN:</strong> {{ larp.name }}</p>
-                        </div>
-                        <div class="col-md-6">
                             <p><strong>{{ larp.factions_name }}:</strong> {{ faction.name }}</p>
                             <p><strong>Préférence émotionnelle:</strong> {{ pj_infos.get_emotions_display }}</p>
                         </div>
                     </div>
                 </div>
+
+                <!-- Skills Information -->
+                <div class="col-6 col-md-6 col-sm-12">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h4 class="mb-0">Compétences</h4>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Compétences actuelles:</strong></p>
+                            <div class="border p-3 mb-3" style="background-color: var(--grey-bg);">
+                                {{ pj_infos.skills|linebreaks }}
+                            </div>
+                            
+                            {% if pj_infos.last_learned %}
+                            <p><strong>Dernière compétence apprise:</strong> {{ pj_infos.last_learned }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Skills Information -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h4 class="mb-0">Compétences</h4>
-                </div>
-                <div class="card-body">
-                    <p><strong>Compétences actuelles:</strong></p>
-                    <div class="border p-3 mb-3" style="background-color: var(--grey-bg);">
-                        {{ pj_infos.skills|linebreaks }}
-                    </div>
-                    
-                    {% if pj_infos.last_learned %}
-                    <p><strong>Dernière compétence apprise:</strong> {{ pj_infos.last_learned }}</p>
-                    {% endif %}
-                </div>
-            </div>
 
             <!-- Game Objectives -->
             {% if pj_infos.objectives %}

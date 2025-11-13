@@ -89,6 +89,7 @@ INSTALLED_APPS = [
     'djangocms_frontend.contrib.utilities',
 
     'larp',
+    'core',
     'djangocms_form_builder',
     'django_bootstrap5',
     'payments',

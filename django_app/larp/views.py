@@ -27,9 +27,9 @@ def pnj_form(request: HttpRequest, pk):
     instance = PnjInfos.objects.get(pk=pk)
     if request.method == "GET":
         form = PnjInfosForm(instance=instance, user=request.user)
-        return render(request, 'larp/form.html', 
+        return render(request, 'larp/pnj_form.html', 
                 {
-                    'title': "Formulaire PNJ Faction",
+                    'title': "Formulaire PNJ",
                     'form': form,
                     'url_validation': url_validation})
 
@@ -40,8 +40,9 @@ def pnj_form(request: HttpRequest, pk):
             form.save()
             return redirect(reverse('larp:view_pnj', kwargs={'pnjinfos_id': instance.pk}))
 
-        return render(request, 'larp/form.html', 
+        return render(request, 'larp/pnj_form.html', 
                     {
+                        'title': "Formulaire PNJ",
                         "form": form,
                         'url_validation': url_validation})
     
@@ -53,8 +54,9 @@ def create_pj(request: HttpRequest, inscription_id):
     larp = inscription.opus.larp
     if request.method == "GET":
         form = PjInfosForm(inscription=inscription, user=request.user)
-        return render(request, 'larp/form.html', 
+        return render(request, 'larp/create_pj.html', 
                 {
+                    'larp': larp,
                     'title': "Création de personnage",
                     'form': form,
                     'url_validation': url_validation})
@@ -70,8 +72,9 @@ def create_pj(request: HttpRequest, inscription_id):
 
             return redirect(reverse('larp:edit_pj', kwargs={'pjinfos_id':instance.pk}))
 
-        return render(request, 'larp/form.html', 
+        return render(request, 'larp/create_pj.html', 
                     {
+                        'larp': larp,
                         "form": form,
                         'url_validation': url_validation})
     
@@ -279,7 +282,7 @@ def edit_pj(request: HttpRequest, pjinfos_id):
     larp = pj_infos.larp
     if request.method == "GET":
         form = PjInfosForm(instance=pj_infos, larp=larp, user=request.user)
-        return render(request, 'larp/form.html', 
+        return render(request, 'larp/edit_pj.html', 
                 {
                     'title': "Création de personnage",
                     'form': form,
@@ -292,7 +295,7 @@ def edit_pj(request: HttpRequest, pjinfos_id):
             instance = form.save()
             return redirect(reverse('larp:view_pj', kwargs={'pjinfos_id': instance.pk}))
 
-        return render(request, 'larp/form.html', 
+        return render(request, 'larp/edit_pj.html', 
                     {
                         "form": form,
                         'url_validation': url_validation})
@@ -863,11 +866,7 @@ def complete_bg(request: HttpRequest, pjinfos_id: int):
     try:
         bg_step = BgStep.objects.get(faction=pj_infos.faction, step=next_step)
     except BgStep.DoesNotExist:
-        # No more steps
-        return render(request, 'larp/simple.html', {
-            'title': "Background terminé",
-            'text': "Vous avez répondu à toutes les questions disponibles."
-        })
+        return redirect(reverse('larp:view_pj', kwargs={'pjinfos_id': pjinfos_id}))
 
     # Get all choices for this step
     all_choices_qs = BgChoice.objects.filter(bg_step=bg_step)
@@ -884,7 +883,8 @@ def complete_bg(request: HttpRequest, pjinfos_id: int):
 
     if request.method == 'GET':
         form = BgAnswerForm(choices_qs=choices_qs)
-        return render(request, 'larp/form.html', {
+        return render(request, 'larp/complete_bg.html', {
+            'pj_infos': pj_infos,
             'title': bg_step.short_name,
             'form': form,
             'question': bg_step.question,
@@ -920,7 +920,8 @@ def complete_bg(request: HttpRequest, pjinfos_id: int):
             # Continue to next step if not completed
             return redirect(reverse('larp:complete_bg', kwargs={'pjinfos_id': pjinfos_id}))
 
-        return render(request, 'larp/form.html', {
+        return render(request, 'larp/complete_bg.html', {
+            'pj_infos': pj_infos,
             'title': bg_step.short_name,
             'form': form,
             'question': bg_step.question,

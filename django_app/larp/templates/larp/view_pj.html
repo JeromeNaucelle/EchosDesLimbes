@@ -1,5 +1,16 @@
 {% extends CMS_TEMPLATE %}
-{% load django_bootstrap5  partials django_htmx %}
+{% load django_bootstrap5  partials django_htmx breadcrumbs %}
+
+{% block breadcrumb %}
+    {% block breadcrumbs %}
+    
+    {% root_breadcrumb_url 'Mes fiches' 'larp:character_list' %}
+
+    {% breadcrumb larp.name %}
+    {% breadcrumb 'Fiche Personnage' %}
+    {% breadcrumb_url pj_infos.name 'larp:view_pj' pj_infos.pk%}
+    {% endblock %}
+{% endblock %}
 
 {% block body_attrs %}
 hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'

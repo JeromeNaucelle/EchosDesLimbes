@@ -1,5 +1,5 @@
 {% extends CMS_TEMPLATE %}
-{% load sekizai_tags %}
+{% load sekizai_tags breadcrumbs %}
 
 {% block title %}Orga : {{ larp }} — {{ opus }}{% endblock %}
 
@@ -28,6 +28,14 @@
     {% endaddtoblock %}
 {% endblock %}
 
+
+{% block breadcrumb %}
+    {% block breadcrumbs %}
+    {% root_breadcrumb_url 'Mes GNs (Orga)' 'larp:orga_gn_list' %}
+    {% breadcrumb_url larp.name 'larp:orga_gn' larp.pk %}
+    {% endblock %}
+{% endblock %}
+
 {% block cms_content %}
         <div class="card mb-3">
             <div class="card-header">
@@ -39,7 +47,7 @@
             </div>
         </div>
 
-         <a href="{% url 'larp:orga_gn_list' %}"><button class="btn btn-sand my-3"><i class="fa-regular fa-circle-left"></i>Retour à mes GN (Orga)</button></a>
+         <a href="{% url 'larp:orga_gn_list' %}"><button class="btn btn-sand my-3"><i class="fa-regular fa-circle-left pe-2"></i>Retour à mes GN (Orga)</button></a>
 
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">

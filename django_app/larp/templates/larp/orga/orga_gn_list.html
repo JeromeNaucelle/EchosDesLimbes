@@ -1,9 +1,16 @@
 {% extends CMS_TEMPLATE %}
-{% load sekizai_tags %}
+{% load sekizai_tags breadcrumbs %}
 
 {% block title %}Orga : mes GN{% endblock %}
 
+{% block breadcrumb %}
+    {% block breadcrumbs %}
+    {% root_breadcrumb_url 'Mes GNs (Orga)' 'larp:orga_gn_list' %}
+    {% endblock %}
+{% endblock %}
+
 {% block cms_content %}
+
         <div class="card mb-3">
             <div class="card-header">
                 <h2>Vue Orga</h2>

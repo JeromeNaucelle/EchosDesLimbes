@@ -1,7 +1,19 @@
 {% extends CMS_TEMPLATE %}
-{% load sekizai_tags django_bootstrap5 partials django_htmx %}
+{% load sekizai_tags django_bootstrap5 partials django_htmx breadcrumbs %}
 
 {% block title %}BG : Gestion des étapes{% endblock %}
+
+{% block breadcrumb %}
+    {% block breadcrumbs %}
+    
+    {% root_breadcrumb_url 'Mes GNs (Orga)' 'larp:orga_gn_list' %}
+
+    {% breadcrumb_url faction.larp.name 'larp:orga_gn' faction.larp.pk %}
+    {% breadcrumb faction.name %}
+
+    {% breadcrumb_url "Étape BG" 'larp:bg_steps' faction.pk %}
+    {% endblock %}
+{% endblock %}
 
 {% block body_attrs %}
 hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'

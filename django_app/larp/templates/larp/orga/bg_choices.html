@@ -1,10 +1,24 @@
 {% extends CMS_TEMPLATE %}
-{% load sekizai_tags django_bootstrap5 partials django_htmx %}
+{% load sekizai_tags django_bootstrap5 partials django_htmx breadcrumbs %}
 
 {% block title %}BG : Gestion des choix{% endblock %}
 
 {% block body_attrs %}
 hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
+{% endblock %}
+
+{% block breadcrumb %}
+    {% block breadcrumbs %}
+    
+    {% root_breadcrumb_url 'Mes GNs (Orga)' 'larp:orga_gn_list' %}
+
+    {% breadcrumb_url bg_step.faction.larp.name 'larp:orga_gn' bg_step.faction.larp.pk %}
+    {% breadcrumb bg_step.faction.name %}
+
+    {% breadcrumb_url "Étape BG" 'larp:bg_steps' bg_step.faction.pk %}
+
+    {% breadcrumb_url bg_step.step 'larp:bg_choices' bg_step.pk %}
+    {% endblock %}
 {% endblock %}
 
 {% block page_head %}

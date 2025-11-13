@@ -1,5 +1,12 @@
 {% extends CMS_TEMPLATE %}
-{% load django_bootstrap5 sekizai_tags %}
+{% load django_bootstrap5 sekizai_tags breadcrumbs %}
+
+{% block breadcrumb %}
+    {% block breadcrumbs %}
+    
+    {% root_breadcrumb_url 'Mes fiches' 'larp:character_list' %}
+    {% endblock %}
+{% endblock %}
 
 {% block title %}Mes fiches perso{% endblock %}
 

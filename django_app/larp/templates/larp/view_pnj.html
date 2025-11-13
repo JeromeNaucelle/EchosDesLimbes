@@ -1,5 +1,15 @@
 {% extends CMS_TEMPLATE %}
-{% load django_bootstrap5 %}
+{% load django_bootstrap5 breadcrumbs %}
+
+{% block breadcrumb %}
+    {% block breadcrumbs %}
+    
+    {% root_breadcrumb_url 'Mes fiches' 'larp:character_list' %}
+
+    {% breadcrumb pnj_infos.larp.name %}
+    {% breadcrumb_url 'Fiche PNJ' 'larp:view_pnj' pnj_infos.pk %}
+    {% endblock %}
+{% endblock %}
 
 {% block cms_content %}
 <div class="container-fluid">

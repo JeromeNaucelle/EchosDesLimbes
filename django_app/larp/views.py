@@ -163,13 +163,18 @@ def orga_gn_pnjv(request: HttpRequest, last_opus, larp, factions):
 
     return render(request, 'larp/orga/orga_gn.html', context)
 
+
 @login_required
 def orga_gn(request: HttpRequest, larp_id):
     from .models import Faction  # local import to avoid circulars in headings
     larp = Larp.objects.get(pk=larp_id)
     has_orga_permission(request.user, larp)
-    last_opus = Opus.objects.filter(larp_id=larp_id).latest('created_at')
+    try:
+        last_opus = Opus.objects.filter(larp_id=larp_id).latest('created_at')
+    except Opus.DoesNotExist:
+        return render(request, 'larp/simple.html', {'message': "Erreur : aucun opus créé pour ce GN"})
     factions = Faction.objects.filter(larp=larp).order_by('name')
+
 
     # Get selected faction from query parameters
     selected_faction_id = request.GET.get('faction')

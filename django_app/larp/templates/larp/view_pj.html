@@ -25,6 +25,41 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
     <div class="row">
         <div class="col-12">
             <h2 class="pb-4">{{ title }}</h2>
+
+            <!-- Action Buttons -->
+            <div class="d-flex gap-2 mb-4">
+                {% if pj_infos.status == 'UNLOCKED' or is_orga %}
+                <a href="{% url 'larp:edit_pj' pj_infos.pk %}" class="btn btn-primary">
+                    <i class="fa-solid fa-edit"></i> Modifier le personnage
+                </a>
+                {% endif %}
+                {% if pj_infos.bg_completed == False %}
+                <a href="{% url 'larp:complete_bg' pj_infos.pk %}" class="btn btn-secondary">
+                    <i class="fa-solid fa-list-check"></i> Compléter le background
+                </a>
+                {% elif not is_orga and pj_infos.status == 'UNLOCKED' %}
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#statusConfirmationModal">
+                    Demander la validation Orga
+                    </button>
+                {% endif %}
+                <a href="{% url 'larp:view_pj_pdf' pj_infos.pk %}" class="btn btn-success">
+                    <i class="fa-solid fa-file-pdf"></i> Exporter en PDF
+                </a>    
+            </div>
+
+            <div class="mb-4">
+                {% if pj_infos.bg_completed and is_orga %}
+                <form action="{% url 'larp:change_pj_status' pj_infos.pk %}" method="post">
+                    {% csrf_token %}
+                    {% bootstrap_form status_form %}
+                    <div style="text-align: center;">
+                        {% bootstrap_button button_type="submit" content="Valider" extra_classes="submit_btn w-75" %}
+                    </div>
+                </form>
+                {% endif %}
+            </div>
+
+            <!-- Début de la fiche perso -->
             
             <div class="card mb-4">
                 <div class="card-header">
@@ -174,44 +209,15 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
             </div>
             {% endif %}
 
-            <!-- Action Buttons -->
-            <div class="d-flex gap-2 mb-4">
-                {% if pj_infos.status == 'UNLOCKED' or is_orga %}
-                <a href="{% url 'larp:edit_pj' pj_infos.pk %}" class="btn btn-primary">
-                    <i class="fa-solid fa-edit"></i> Modifier le personnage
-                </a>
-                {% endif %}
-                {% if pj_infos.bg_completed == False %}
-                <a href="{% url 'larp:complete_bg' pj_infos.pk %}" class="btn btn-secondary">
-                    <i class="fa-solid fa-list-check"></i> Compléter le background
-                </a>
-                {% elif not is_orga and pj_infos.status == 'UNLOCKED' %}
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#statusConfirmationModal">
-                    Demander la validation Orga
-                    </button>
-                {% endif %}
-                <a href="{% url 'larp:view_pj_pdf' pj_infos.pk %}" class="btn btn-success">
-                    <i class="fa-solid fa-file-pdf"></i> Exporter en PDF
-                </a>
+            <!-- Retour à la page précédente -->
+            <div>
                 {% if request.user.pk == pj_infos.user.pk %}
-                <a href="{% url 'larp:character_list' %}" class="btn btn-outline-secondary">
+                <a href="{% url 'larp:character_list' %}" class="btn btn-sand">
                 {% else %}
                 <a href="{% url 'larp:orga_gn' pj_infos.larp.pk %}" class="btn btn-sand">
                 {% endif %}
                     <i class="fa-solid fa-arrow-left"></i> Retour à la liste
                 </a>
-            </div>
-
-            <div>
-                {% if pj_infos.bg_completed and is_orga %}
-                <form action="{% url 'larp:change_pj_status' pj_infos.pk %}" method="post">
-                    {% csrf_token %}
-                    {% bootstrap_form status_form %}
-                    <div style="text-align: center;">
-                        {% bootstrap_button button_type="submit" content="Valider" extra_classes="submit_btn w-75" %}
-                    </div>
-                </form>
-                {% endif %}
             </div>
         </div>
     </div>

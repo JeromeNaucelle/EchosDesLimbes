@@ -66,6 +66,7 @@ class Larp(models.Model):
     factions_name = models.CharField(verbose_name="Dénomination des groupes (Faction, Gang...)", max_length=35)
     orga_group    = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True)
     pnjv_orga_contact = models.TextField(default="", blank=True, verbose_name="Info de contact orga des PNJV")
+    sheet_creation_opened = models.BooleanField(default=False, verbose_name="Création de personnage ouverte")
 
 
     def __str__(self):

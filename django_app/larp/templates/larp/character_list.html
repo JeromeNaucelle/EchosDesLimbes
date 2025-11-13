@@ -15,8 +15,15 @@
     </br>
 
 
-        {% for larp, inscription in larp_inscriptions.items %}
-        <h3>{{ larp }}</h3>
+        {% for larp_name, inscription in larp_inscriptions.items %}
+
+        <h3>{{ larp_name }}</h3>
+        {% if inscription.sheet_creation_opened is False %}
+        <p>
+            Oups, la création de personnage n'est pas encore disponible. <br>
+            Patientez quelques jours, vous serez tenue au courant sur nos réseaux quand ce sera ouvert.
+        </p>
+        {% else %}
         <table class="w-100 table">
             <thead>
                 <tr>
@@ -49,6 +56,7 @@
                 {% endif %}
             </tbody>
         </table>
+        {% endif %}
 
     {% empty %}
         <h4>Vous n'êtes inscrit à aucun GN actuellement</h4>

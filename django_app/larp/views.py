@@ -52,6 +52,8 @@ def create_pj(request: HttpRequest, inscription_id):
     url_validation = reverse('larp:create_pj', kwargs={'inscription_id':inscription_id})
     inscription = Inscription.objects.select_related("opus__larp").get(pk=inscription_id)
     larp = inscription.opus.larp
+    if larp.sheet_creation_opened is False:
+        raise PermissionDenied
     if request.method == "GET":
         form = PjInfosForm(inscription=inscription, user=request.user)
         return render(request, 'larp/create_pj.html', 

@@ -37,7 +37,13 @@ SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", 'False').lower() in ('true', '1')
 
-ALLOWED_HOSTS = ["localhost", "lesechosdeslimbes.fr", "test.lesechosdeslimbes.fr"]
+ALLOWED_HOSTS = [
+    "localhost", 
+    "lesechosdeslimbes.fr", 
+    "www.lesechosdeslimbes.fr", 
+    "test.lesechosdeslimbes.fr", 
+    "www.test.lesechosdeslimbes.fr"
+]
 
 
 # Application definition

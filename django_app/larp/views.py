@@ -482,6 +482,11 @@ def bg_steps(request: HttpRequest, faction_id: int):
             })
 
 
+
+@login_required
+def my_profile(request: HttpRequest):
+    return redirect(reverse('larp:profile', kwargs={'user_id': request.user.pk}))
+
 @login_required
 def profile(request: HttpRequest, user_id: int):
     if not request.user.pk == user_id:

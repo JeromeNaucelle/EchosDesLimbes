@@ -24,6 +24,7 @@ urlpatterns = [
     path('my_inscriptions', views.my_inscriptions, name='my_inscriptions'),
     path('character_list', views.character_list, name='character_list'),
     path('profile/<int:user_id>', views.profile, name='profile'),
+    path('my-profile', views.my_profile, name='my-profile'),
     path('view_profile/<int:user_id>/pdf', views.view_profile_pdf, name='view_profile_pdf'),
     path('test', views.test, name='test'),
     path('pnj_form/<int:pk>', views.pnj_form, name='pnj_form'),

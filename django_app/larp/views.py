@@ -442,7 +442,13 @@ def bg_steps(request: HttpRequest, faction_id: int):
             current_step = BgStep.objects.get(pk=request.POST['step_id'])
             form = BgStepForm(action=action, instance=current_step)
         if request.method == 'DELETE':
-            current_step = BgStep.objects.get(pk=request.GET['step_id'])
+            faction_steps = BgStep.objects.filter(faction=faction)
+            current_step = faction_steps.get(pk=request.GET['step_id'])
+            # On update les numéro d'étape de toutes les étapes suivantes (en décrémentant)
+            updated_steps = faction_steps.filter(step__gt=current_step.step)
+            for step in updated_steps:
+                step.step -= 1
+            BgStep.objects.bulk_update(updated_steps,['step'])
             current_step.delete()
             return HttpResponseClientRedirect(reverse('larp:bg_steps', kwargs={'faction_id': faction_id}))
 

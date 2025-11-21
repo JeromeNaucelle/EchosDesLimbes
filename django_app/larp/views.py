@@ -202,17 +202,32 @@ def orga_gn(request: HttpRequest, larp_id):
     for faction in factions_to_process:
         # Pure PJ users (access_type = 'PJ')
         pj_users = inscriptions.filter(faction=faction, access_type='PJ').values_list('user_id', flat=True)
-        pj_list = list(PjInfos.objects.filter(larp=larp, faction=faction, user_id__in=pj_users).order_by('name'))
-        
+        pj_list = PjInfos.objects.filter(faction=faction, user_id__in=pj_users)
+        pj_users = User.objects.filter(pk__in=pj_users)
+        pj_ordered_list = []
+        for user in pj_users:
+            pj_infos = list(pj_list.filter(user=user))
+            pj1 = None
+            pj2 = None
+            if len(pj_infos) > 0:
+                pj1 = pj_infos[0]
+            if len(pj_infos) > 1:
+                pj2 = pj_infos[1]
+            pj_ordered_list.append({
+                'user': user,
+                'pj1': pj1,
+                'pj2': pj2
+            })
         # PNJF users (access_type = 'PNJF') - have both PJ and PNJ sheets
         pnjf_users = inscriptions.filter(faction=faction, access_type='PNJF').values_list('user_id', flat=True)
         pnjf_list = []
-        for user_id in pnjf_users:
+        pnjf_users = User.objects.filter(pk__in=pnjf_users)
+        for user in pnjf_users:
             try:
-                pj_infos = PjInfos.objects.get(larp=larp, faction=faction, user_id=user_id)
-                pnj_infos = PnjInfos.objects.get(larp=larp, user_id=user_id)
+                pj_infos = list(PjInfos.objects.filter(faction=faction, user=user))
+                pnj_infos = PnjInfos.objects.get(user=user)
                 pnjf_list.append({
-                    'user': pj_infos.user,
+                    'user': user,
                     'pj_infos': pj_infos,
                     'pnj_infos': pnj_infos
                 })
@@ -222,7 +237,7 @@ def orga_gn(request: HttpRequest, larp_id):
         
         faction_data.append({
             'faction': faction,
-            'pj_list': pj_list,
+            'pj_list': pj_ordered_list,
             'pnjf_list': pnjf_list
         })
 

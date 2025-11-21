@@ -8,7 +8,7 @@
         <style>
 
         .sheet_col {
-            width: 200px;
+            width: 250px;
         }
 
         .status-success {
@@ -22,7 +22,11 @@
             padding-left: 0.2em;
             padding-right: 0.2em;
         }
-            
+
+        .pj_col > div:not(:last-child) {
+            border-bottom: solid 1px;
+        }
+                    
 
         </style>
     {% endaddtoblock %}
@@ -89,27 +93,44 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Personnage</th>
                             <th>Joueur</th>
-                            <th class="sheet_col">Fiche PJ</th>
+                            <th class="sheet_col">Fiche PJ 1</th>
+                            <th class="sheet_col">Fiche PJ 2</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for pj in faction_info.pj_list %}
                         <tr>
-                            <td>{{ pj.name }}</td>
                             <td>
                                 <a href="{% url 'larp:profile' pj.user.pk %}">{{pj.user.username }}</a>
                                     <br/>
                                     {{ pj.user.get_full_name }}
                             </td>
+                            {% if pj.pj1 %}
                             <td class="sheet_col">
-                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj' pj.pk %}">Voir</a>
-                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj_pdf' pj.pk %}">PDF</a>
+                                <div>{{ pj.pj1 }}</div>
+                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj' pj.pj1.pk %}">Voir</a>
+                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj_pdf' pj.pj1.pk %}">PDF</a>
                                 <div class="{{ pj.status_color_class }}">
-                                    status : {{ pj.short_status }}
+                                    status : {{ pj.pj1.short_status }}
                                 </div>
                             </td>
+                             {% else %}
+                            <td class="sheet_col"></td>
+                             {% endif %}
+
+                            {% if pj.pj2 %}
+                            <td class="sheet_col">
+                                <div>{{ pj.pj2 }}</div>
+                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj' pj.pj2.pk %}">Voir</a>
+                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj_pdf' pj.pj2.pk %}">PDF</a>
+                                <div class="{{ pj.status_color_class }}">
+                                    status : {{ pj.pj2.short_status }}
+                                </div>
+                            </td>
+                             {% else %}
+                            <td class="sheet_col"></td>
+                             {% endif %}
                         </tr>
                         {% empty %}
                         <tr><td colspan="3">Aucun PJ dans cette faction.</td></tr>
@@ -122,7 +143,6 @@
                 <table class="table">
                     <thead>
                         <tr class="pnjf_row">
-                            <th>Personnage</th>
                             <th>Joueur</th>
                             <th class="sheet_col">Fiche PNJ</th>
                             <th class="sheet_col">Fiche PJ</th>
@@ -131,23 +151,30 @@
                     <tbody>
                         {% for pnjf in faction_info.pnjf_list %}
                         <tr class="pnjf_row">
-                            <td>{{ pnjf.pj_infos.name }}</td>
-                            <td><a href="{% url 'larp:profile' pnjf.user.pk %}">{{ pnjf.user.get_full_name }} ({{ pnjf.user.username }})</a></td>
-                            <td class="sheet_col">
-                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pnj' pnjf.pnj_infos.pk %}">Voir PNJ</a>
-                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pnj_pdf' pnjf.pnj_infos.pk %}">PDF PNJ</a>
+                            <td class="align-middle"><a href="{% url 'larp:profile' pnjf.user.pk %}">{{ pnjf.user.get_full_name }} ({{ pnjf.user.username }})</a></td>
+                            <td class="sheet_col align-middle">
+                                <div>&nbsp;</div>
+                                <a class="btn btn-sm btn-outline-light col-5" href="{% url 'larp:view_pnj' pnjf.pnj_infos.pk %}"><i class="fa-regular fa-eye"></i> / <i class="fa-solid fa-pen-to-square"></i></a>
+                                <a class="btn btn-sm btn-outline-light col-5" href="{% url 'larp:view_pnj_pdf' pnjf.pnj_infos.pk %}">PDF</a>
                                 <div class="{{ pnjf.pnj_infos.status_color_class }}">
                                     status : {{ pnjf.pnj_infos.short_status }}
                                 </div>
                             </td>
-                            <td class="sheet_col">
-                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj' pnjf.pj_infos.pk %}">Voir PJ</a>
-                                <a class="btn btn-sm btn-outline-light" href="{% url 'larp:view_pj_pdf' pnjf.pj_infos.pk %}">PDF PJ</a>
-                                <div class="{{ pnjf.pj_infos.status_color_class }}">
-                                status : {{ pnjf.pj_infos.short_status }}
+                            <td class="sheet_col pj_col">
+                                {% for pj_infos in pnjf.pj_infos %}
+                                <div>
+                                    <div>{{ pj_infos.name }}</div>
+                                    <div>
+                                        <a class="btn btn-sm btn-outline-light col-5" href="{% url 'larp:view_pj' pj_infos.pk %}"><i class="fa-regular fa-eye"></i> / <i class="fa-solid fa-pen-to-square"></i></a>
+                                        <a class="btn btn-sm btn-outline-light col-5" href="{% url 'larp:view_pj_pdf' pj_infos.pk %}">PDF</a>
+                                    </div>
+                                    <div class="{{ pj_infos.status_color_class }}">
+                                    status : {{ pj_infos.short_status }}
+                                    </div>
                                 </div>
+                                {% endfor %}
                             </td>
-
+ 
                         </tr>
                         {% empty %}
                         <tr><td colspan="4">Aucun PNJF dans cette faction.</td></tr>

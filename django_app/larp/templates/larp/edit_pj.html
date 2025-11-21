@@ -6,7 +6,7 @@
     
     {% root_breadcrumb_url 'Mes fiches' 'larp:character_list' %}
 
-    {% breadcrumb larp.name %}
+    {% breadcrumb form.instance.larp.name %}
     {% breadcrumb 'Fiche Personnage' %}
     {% with form.instance as pj_infos %}
         {% breadcrumb_url pj_infos.name 'larp:view_pj' pj_infos.pk%}

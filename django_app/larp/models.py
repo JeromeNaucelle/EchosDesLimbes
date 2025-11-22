@@ -258,11 +258,11 @@ class Character_Bg_choices(models.Model):
 
 class PjInfos(models.Model):
     class EMOTION_PREFERENCE(Enum):
-        SOFT        = "Soft, je veux un jeu doux"
-        MOD_POSITIF = "Modéré Positif, je suis ok pour vivre des événements heureux"
-        MOD_ALL     = "Modéré toutes émotions"
-        SURPRISE    = "Surprenez-moi, vous avez carte blanche"
-        INTENSE     = "Intense, je suis motivé.e pour du drama"
+        SOFT        = "Soft, je veux un jeu doux et soft, pas trop d’émotion fortes prévu"
+        MOD_POSITIF = "Modéré positif, je suis d’accord pour des émotions et événements positives"
+        MOD_ALL     = "Modéré, je suis d’accord pour expérimenter toutes émotions"
+        SURPRISE    = "Surprenez-moi, je veux expérimenter des choses nouvelles et inattendus"
+        INTENSE     = "Intense, je suis motivé.e pour des émotions fortes et intenses"
 
         @classmethod
         def choices(cls):

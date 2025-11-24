@@ -225,7 +225,7 @@ def orga_gn(request: HttpRequest, larp_id):
         for user in pnjf_users:
             try:
                 pj_infos = list(PjInfos.objects.filter(faction=faction, user=user))
-                pnj_infos = PnjInfos.objects.get(user=user)
+                pnj_infos = PnjInfos.objects.get(user=user, larp_id=larp_id)
                 pnjf_list.append({
                     'user': user,
                     'pj_infos': pj_infos,

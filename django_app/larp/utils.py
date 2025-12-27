@@ -17,7 +17,7 @@ class CurrentInscription():
         self.sheet_creation_opened = inscription.opus.larp.sheet_creation_opened
 
         if self.access_type == larp_models.AccessType.PJ or self.access_type == larp_models.AccessType.PNJF:
-            self.pj_infos = larp_models.PjInfos.objects.filter(user=inscription.user)
+            self.pj_infos = larp_models.PjInfos.objects.filter(user=inscription.user, larp=inscription.opus.larp)
 
             if len(self.pj_infos) < 2:
                 self.can_add_character = True

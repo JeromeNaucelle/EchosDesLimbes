@@ -40,10 +40,18 @@ admin.site.register(models.Ticket, TicketAdmin)
 class PjInfosAdmin(admin.ModelAdmin):
     # a list of displayed columns name.
     list_select_related = ["larp", "faction"]
-    list_display = ['user','larp_name', 'faction', 'status']
-    search_fields = ('user',)
+    list_display = ['user','name', 'larp_name', 'faction', 'status']
+    search_fields = ('user', 'name')
 
 admin.site.register(models.PjInfos, PjInfosAdmin)
+
+class PnjInfosAdmin(admin.ModelAdmin):
+    # a list of displayed columns name.
+    list_select_related = ["larp"]
+    list_display = ['user', 'larp_name', 'completed']
+    search_fields = ('user',)
+
+admin.site.register(models.PnjInfos, PnjInfosAdmin)
 
 
 class AccesTypeClasseFilter(SimpleListFilter):
